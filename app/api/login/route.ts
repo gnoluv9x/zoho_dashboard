@@ -1,5 +1,7 @@
-import { ACCEPT_STATUS_CODE } from "@/constant";
+import { authApi } from "@/api/auth";
+import { ACCEPT_STATUS_CODE, ACCESS_TOKEN_KEY } from "@/constant";
 import { ILoginBody } from "@/models/server";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -22,7 +24,7 @@ export async function POST(req: Request) {
     }
 
     const resp = {
-      status: false,
+      status: "fail",
       missingType,
       message,
     };
@@ -38,26 +40,25 @@ export async function POST(req: Request) {
     password !== process.env.NEXT_PUBLIC_ZOHO_PASSWORD
   ) {
     return NextResponse.json(
-      { message: "Sai thông tin đăng nhập" },
+      { message: "Sai thông tin đăng nhập", status: "fail" },
       { status: ACCEPT_STATUS_CODE.BAD_REQUEST }
     );
   }
 
   // get access token from refresh token
-  const formData = new FormData();
-  formData.append("refresh_token", process.env.NEXT_PUBLIC_REFESH_TOKEN as string);
-  formData.append("client_id", process.env.NEXT_PUBLIC_ZOHO_CLIENT_ID as string);
-  formData.append("client_secret", process.env.NEXT_PUBLIC_ZOHO_CLIENT_SECRET as string);
-  formData.append("redirect_uri", "https://www.google.com");
-  formData.append("grant_type", "refresh_token");
+  const respData = await authApi.getAccessToken();
 
-  const response = await fetch("https://accounts.zoho.com/oauth/v2/token", {
-    method: "POST",
-    redirect: "manual",
-    body: formData,
-  });
-  const respData = await response.json();
-  console.log("Debug_here response: ", respData);
-
-  return NextResponse.json({ message: "Đăng nhập thành công" }, { status: 200 });
+  if (respData?.access_token) {
+    const cookieStore = cookies();
+    cookieStore.set(ACCESS_TOKEN_KEY, respData.access_token);
+    return NextResponse.json(
+      { message: "Đăng nhập thành công", accessToken: respData.access_token, status: "success" },
+      { status: 200 }
+    );
+  } else {
+    return NextResponse.json(
+      { message: "Đăng nhập thất bại", status: "fail" },
+      { status: ACCEPT_STATUS_CODE.BAD_REQUEST }
+    );
+  }
 }

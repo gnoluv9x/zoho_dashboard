@@ -1,15 +1,13 @@
-import { CookieKey } from "@/models/type";
+export const handleLogout = async () => {};
 
-export const handleLogout = () => {};
-
-export function setClientCookie(cname: CookieKey, cvalue: any, exdays: number = 1): void {
+export function setClientCookie(cname: string, cvalue: any, exdays: number = 1): void {
   const d = new Date();
   d.setTime(d.getTime() + exdays * 60 * 60 * 1000);
   let expires = "expires=" + d.toUTCString();
   document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 }
 
-export function getClientCookie(cname: CookieKey): string {
+export function getClientCookie(cname: string): string {
   let name = cname + "=";
   let decodedCookie = decodeURIComponent(document.cookie);
   let ca = decodedCookie.split(";");
@@ -25,6 +23,6 @@ export function getClientCookie(cname: CookieKey): string {
   return "";
 }
 
-export function checkClientCookie(key: CookieKey): boolean {
+export function checkClientCookie(key: string): boolean {
   return !!getClientCookie(key);
 }
