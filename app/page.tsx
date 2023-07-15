@@ -1,5 +1,6 @@
 "use client";
 
+import Filter from "@/components/Filters";
 import { ACCESS_TOKEN_KEY } from "@/constant";
 import { getClientCookie } from "@/utils/helper";
 import { useRouter } from "next/navigation";
@@ -14,5 +15,9 @@ export default function Home() {
     return false;
   }
 
-  return <main className="container">Oke content</main>;
+  return (
+    <main className="content_container">
+      <Filter />
+    </main>
+  );
 }

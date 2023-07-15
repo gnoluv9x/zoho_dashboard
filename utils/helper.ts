@@ -26,3 +26,9 @@ export function getClientCookie(cname: string): string {
 export function checkClientCookie(key: string): boolean {
   return !!getClientCookie(key);
 }
+
+export function formatVnDate(value: Date | null): string {
+  if (!value) return "";
+
+  return new Date(value).toLocaleDateString("vi-VI");
+}
