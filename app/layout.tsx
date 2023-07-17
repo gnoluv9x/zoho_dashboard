@@ -1,3 +1,4 @@
+import React from "react";
 import Header from "@/components/headers";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";

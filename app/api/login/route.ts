@@ -1,6 +1,6 @@
 import { authApi } from "@/api/auth";
 import { ACCEPT_STATUS_CODE, ACCESS_TOKEN_KEY } from "@/constant";
-import { ILoginBody } from "@/models/server";
+import { ILoginBody } from "@/types/server";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -35,13 +35,10 @@ export async function POST(req: Request) {
   const { username, password } = loginBody;
 
   // validate username && password
-  if (
-    username !== process.env.NEXT_PUBLIC_ZOHO_USERNAME ||
-    password !== process.env.NEXT_PUBLIC_ZOHO_PASSWORD
-  ) {
+  if (username !== process.env.NEXT_PUBLIC_ZOHO_USERNAME || password !== process.env.NEXT_PUBLIC_ZOHO_PASSWORD) {
     return NextResponse.json(
       { message: "Sai thông tin đăng nhập", status: "fail" },
-      { status: ACCEPT_STATUS_CODE.BAD_REQUEST }
+      { status: ACCEPT_STATUS_CODE.BAD_REQUEST },
     );
   }
 
@@ -53,12 +50,12 @@ export async function POST(req: Request) {
     cookieStore.set(ACCESS_TOKEN_KEY, respData.access_token);
     return NextResponse.json(
       { message: "Đăng nhập thành công", accessToken: respData.access_token, status: "success" },
-      { status: 200 }
+      { status: 200 },
     );
   } else {
     return NextResponse.json(
       { message: "Đăng nhập thất bại", status: "fail" },
-      { status: ACCEPT_STATUS_CODE.BAD_REQUEST }
+      { status: ACCEPT_STATUS_CODE.BAD_REQUEST },
     );
   }
 }

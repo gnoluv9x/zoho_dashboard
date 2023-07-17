@@ -1,16 +1,20 @@
+import { Option } from "@/types/type";
 import React from "react";
-import { Props as SelectProps, StylesConfig } from "react-select";
+import ReactSelect, { Props as SelectProps, StylesConfig } from "react-select";
 import { SelectStyled } from "./styled";
 
 interface SelectCustomProps extends SelectProps {
   className?: string;
   customStyles?: StylesConfig<any>;
+  onChangeValue: (value: Option<string | number>["value"]) => void;
+  options: Option<string | number>[];
 }
 
 const defaultStyles = {
-  control: (baseStyles: any) => ({
-    ...baseStyles,
-    height: "24px",
+  control: (styles: any) => ({
+    ...styles,
+    minHeight: "36px",
+    height: "36px",
   }),
 };
 
@@ -21,24 +25,22 @@ const SelectCustom: React.FC<SelectCustomProps> = ({
   placeholder = "Vui lòng chọn",
   name = "select",
   customStyles = defaultStyles,
+  options,
+  onChangeValue,
   ...props
 }) => {
-  const colourOptions: any[] = [
-    { label: "A", value: "a" },
-    { label: "B", value: "b" },
-  ];
-
   return (
-    <SelectStyled
+    <ReactSelect
       isDisabled={isDisabled}
       isLoading={isLoading}
       isSearchable={isSearchable}
       name={name}
-      options={colourOptions}
+      options={options}
       placeholder={placeholder}
       styles={customStyles}
       className="select-custom-container"
       classNamePrefix="select-custom"
+      onChange={(option: any) => onChangeValue(option.value)}
       {...props}
     />
   );

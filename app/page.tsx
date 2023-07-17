@@ -1,14 +1,15 @@
 "use client";
 
+import CommonTable from "@/components/Common/Table";
 import Filter from "@/components/Filters";
 import { ACCESS_TOKEN_KEY } from "@/constant";
-import { getClientCookie } from "@/utils/helper";
+import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
   const router = useRouter();
 
-  const accessToken = getClientCookie(ACCESS_TOKEN_KEY);
+  const accessToken = Cookies.get(ACCESS_TOKEN_KEY);
 
   if (!accessToken) {
     router.push("/auth");
@@ -17,7 +18,10 @@ export default function Home() {
 
   return (
     <main className="content_container">
-      <Filter />
+      <div className="container mx-auto">
+        <Filter />
+        <CommonTable />
+      </div>
     </main>
   );
 }
