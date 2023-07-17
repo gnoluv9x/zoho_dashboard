@@ -147,22 +147,6 @@ const CommonTable: React.FC<TableProps> = ({}) => {
             );
           })}
         </tbody>
-        {/* <tfoot>
-          {table.getFooterGroups().map((footer) => {
-            console.log("Debug_here footer: ", footer);
-            return (
-              <tr key={footer.id}>
-                {footer.headers.map((head) => {
-                  return (
-                    <td key={head.id}>
-                      {head.isPlaceholder ? null : flexRender(head.column.columnDef.header, head.getContext())}
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
-        </tfoot> */}
       </table>
     </div>
   );
