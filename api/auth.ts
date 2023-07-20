@@ -1,4 +1,4 @@
-import { ILoginBody } from "@/types/server";
+import { ILoginBody } from "@/types";
 import axiosClient from "@/utils/api";
 
 const LOGIN_URL = "/login";

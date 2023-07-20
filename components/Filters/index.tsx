@@ -9,9 +9,12 @@ const MOCK_OPTIONS = [
   { value: "2", label: "2" },
 ];
 
-interface FilterProps {}
+interface FilterProps {
+  loading: boolean;
+  data: any;
+}
 
-const Filter: React.FC<FilterProps> = ({}) => {
+const Filter: React.FC<FilterProps> = ({ loading, data }) => {
   const handleChange = (value: string | null): void => {
     console.log("Debug_here value: ", value);
   };

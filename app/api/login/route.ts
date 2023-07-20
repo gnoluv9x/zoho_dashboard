@@ -1,6 +1,6 @@
 import { authApi } from "@/api/auth";
 import { ACCEPT_STATUS_CODE, ACCESS_TOKEN_KEY } from "@/constant";
-import { ILoginBody } from "@/types/server";
+import { ILoginBody } from "@/types";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 

@@ -3,6 +3,7 @@ import { ACCEPT_STATUS_CODE, ACCESS_TOKEN_KEY } from "@/constant";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 import queryString from "query-string";
+import { getAccessToken } from "./listApis";
 
 const listAcceptHttpStatusCode = Object.values(ACCEPT_STATUS_CODE);
 
@@ -23,10 +24,10 @@ axiosClient.interceptors.response.use(
     if (response.status === 401) {
       const { config } = response;
 
-      const resp = await authApi.getAccessToken();
+      const resp: any = await getAccessToken();
 
-      if (resp?.access_token) {
-        Cookies.set(ACCESS_TOKEN_KEY, resp.access_token);
+      if (resp?.data?.accessToken) {
+        Cookies.set(ACCESS_TOKEN_KEY, resp?.data.accessToken);
         return axiosClient(config);
       }
     }

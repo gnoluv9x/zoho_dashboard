@@ -1,7 +1,13 @@
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import React from "react";
+import { TableStyled } from "./styled";
 
-interface TableProps {}
+interface TableProps {
+  loading?: boolean;
+  data?: any[];
+  columns?: any[];
+  listTitles?: string[];
+}
 
 type Person = {
   firstName: string;
@@ -41,11 +47,10 @@ const defaultData: Person[] = [
 
 const columnHelper = createColumnHelper<Person>();
 
-const columns = [
+const defaultColumns = [
   columnHelper.group({
     id: "full name",
     header: () => <span>Full name</span>,
-    // footer: (props) => props.column.id,
     columns: [
       columnHelper.accessor("firstName", {
         cell: (info) => info.getValue().toUpperCase(),
@@ -97,28 +102,30 @@ const columns = [
   }),
 ];
 
-const CommonTable: React.FC<TableProps> = ({}) => {
-  const [data, setData] = React.useState(() => [...defaultData]);
-
-  const table = useReactTable({
+const CommonTable: React.FC<TableProps> = ({
+  loading,
+  data = defaultData,
+  columns = defaultColumns,
+  listTitles = ["First Name", "Last Name", "Age", "Visits", "Status", "Progress"],
+}) => {
+  const reactTable = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
 
   return (
-    <div className="mt-3 p-3 ">
-      <table className="w-full">
+    <TableStyled className="table-container" listTitles={listTitles}>
+      <table>
         <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
+          {reactTable.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id} className="table-head">
               {headerGroup.headers.map((header) => {
                 return (
                   <th
                     key={header.id}
                     align={(header.column.columnDef.meta as any)?.align}
                     onClick={header.column.getToggleSortingHandler()}
-                    className="border-2 border-solid border-[#ddd] bg-green-500"
                     colSpan={header.colSpan}
                   >
                     {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
@@ -129,16 +136,12 @@ const CommonTable: React.FC<TableProps> = ({}) => {
           ))}
         </thead>
         <tbody>
-          {table.getRowModel().rows.map((row) => {
+          {reactTable.getRowModel().rows.map((row) => {
             return (
-              <tr key={row.id} className="[&:nth-child(event)]:#f2f2f2 hover:bg-[#ddd]">
+              <tr key={row.id}>
                 {row.getVisibleCells().map((cell) => {
                   return (
-                    <td
-                      className="border-2 border-solid border-[#ddd]"
-                      key={cell.id}
-                      align={(cell.column.columnDef.meta as any)?.align}
-                    >
+                    <td key={cell.id} align={(cell.column.columnDef.meta as any)?.align}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   );
@@ -148,7 +151,7 @@ const CommonTable: React.FC<TableProps> = ({}) => {
           })}
         </tbody>
       </table>
-    </div>
+    </TableStyled>
   );
 };
 
