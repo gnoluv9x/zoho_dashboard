@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import Header from "@/components/headers";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -20,7 +20,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="en">
       <body className={inter.className}>
         <Header />
-        <>{children}</>
+        <Suspense fallback={<div>Loading...</div>}>
+          <>{children}</>
+        </Suspense>
       </body>
     </html>
   );

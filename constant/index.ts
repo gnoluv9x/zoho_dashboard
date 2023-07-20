@@ -6,4 +6,10 @@ export const DEFAULT_DATE_FORMAT = "dd/MM/yyyy";
 
 export const INVALID_TOKEN_CODE = 7601;
 
-export const REVALIDATE_TIME = 60;
+export const REVALIDATE_TIME = 5 * 60; // seconds
+
+export const DEFAULT_PAGE = 1;
+
+export const PAGE_SIZE_OPTIONS = [10, 20, 30];
+
+export const ALIGN_VALUE = { left: "flex-start", right: "flex-end", center: "center" };

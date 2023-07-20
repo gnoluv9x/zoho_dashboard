@@ -2,6 +2,8 @@ export enum CookieKey {
   ACCESS_TOKEN = "accessToken",
 }
 
+export type StringOrNumber = string | number;
+
 export type Option<T> = {
   value: T;
   label: string;

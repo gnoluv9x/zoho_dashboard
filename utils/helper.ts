@@ -23,3 +23,22 @@ export const getFibonancyFromIndex = (index: number): number => {
 
   return current;
 };
+
+export const formatDateValue = (val: number): string => {
+  return ("0" + val).slice(-2);
+};
+
+export const convertIsoStringDateToFormated = (dateString: string) => {
+  if (!dateString) return "-";
+
+  const dateFormat = new Date(dateString);
+
+  const year = dateFormat.getFullYear().toString();
+  const month = formatDateValue(dateFormat.getMonth() + 1);
+  const date = formatDateValue(dateFormat.getDate());
+  const hours = formatDateValue(dateFormat.getHours());
+  const minutes = formatDateValue(dateFormat.getMinutes());
+  const seconds = dateFormat.getSeconds().toString();
+
+  return hours + ":" + minutes + ":" + seconds + " " + date + "-" + month + "-" + year;
+};

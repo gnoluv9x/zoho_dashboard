@@ -57,6 +57,7 @@ export async function getItems(
       Authorization: `Zoho-oauthtoken ${accessToken}`,
     },
     redirect: "manual",
+    next: { revalidate: REVALIDATE_TIME },
   });
 
   const data = await response.json();

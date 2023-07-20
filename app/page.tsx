@@ -1,10 +1,9 @@
 "use client";
 
-import CommonTable from "@/components/Common/Table";
 import Filter from "@/components/Filters";
 import TaskTable from "@/components/TaskTable";
 import { ACCESS_TOKEN_KEY } from "@/constant";
-import { CommonInfo, FinalResponse, IdAndNameType, ItemsResponse } from "@/types";
+import { CommonInfo, FinalResponse, IdAndNameType } from "@/types";
 import axiosClient from "@/utils/api";
 import { removeDuplicate } from "@/utils/helper";
 import { AxiosResponse } from "axios";
@@ -18,10 +17,9 @@ export default function Home() {
 
   const [listSprints, setListSprints] = useState<any[]>([]);
   const [listStatus, setListStatus] = useState<CommonInfo[]>([]);
-  const [listMembers, setListMembers] = useState<any[]>([]);
+  const [listMembers, setListMembers] = useState<IdAndNameType[]>([]);
   const [listProjects, setListProjects] = useState<CommonInfo[]>([]);
   const [listAllItems, setListAllItems] = useState<any[]>([]);
-  console.log("Debug_here listAllItems: ", listAllItems);
   const [listRenderItems, setListRenderItems] = useState<any[]>([]);
 
   const router = useRouter();
@@ -75,16 +73,24 @@ export default function Home() {
       });
   }, []);
 
-  if (!accessToken) {
-    router.push("/auth");
-    return false;
-  }
+  useEffect(() => {
+    if (typeof window !== "undefined" && !accessToken) {
+      router.push("/auth");
+    }
+  }, [accessToken, router]);
 
   return (
     <main className="content_container">
       <div className="container mx-auto">
         <Filter loading={loading} data={respData} />
-        <TaskTable listSprints={listSprints} data={listAllItems} />
+        <TaskTable
+          listSprints={listSprints}
+          data={listAllItems}
+          listStatus={listStatus}
+          listProjects={listProjects}
+          listMembers={listMembers}
+          loading={loading}
+        />
       </div>
     </main>
   );

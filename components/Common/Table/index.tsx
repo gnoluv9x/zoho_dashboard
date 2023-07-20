@@ -1,121 +1,71 @@
-import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import {
+  PaginationState,
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 import React from "react";
 import { TableStyled } from "./styled";
+import { DEFAULT_PAGE, PAGE_SIZE_OPTIONS } from "@/constant";
+import Pagination from "@/components/Pagination";
+import { TableColumnCutom } from "@/types/table";
+import Empty from "../Empty";
+import Loading from "@/app/loading";
+import Loader from "../Loading";
 
-interface TableProps {
+interface TableProps<T> {
   loading?: boolean;
-  data?: any[];
-  columns?: any[];
-  listTitles?: string[];
+  data: T[];
+  columns: TableColumnCutom<T>[];
+  paginationProps?: PaginationState & {
+    className?: string;
+    align?: "left" | "right" | "center";
+  };
 }
 
-type Person = {
-  firstName: string;
-  lastName: string;
-  age: number;
-  visits: number;
-  status: string;
-  progress: number;
-};
-
-const defaultData: Person[] = [
-  {
-    firstName: "tanner",
-    lastName: "linsley",
-    age: 24,
-    visits: 100,
-    status: "In Relationship",
-    progress: 50,
-  },
-  {
-    firstName: "tandy",
-    lastName: "miller",
-    age: 40,
-    visits: 40,
-    status: "Single",
-    progress: 80,
-  },
-  {
-    firstName: "joe",
-    lastName: "dirte",
-    age: 45,
-    visits: 20,
-    status: "Complicated",
-    progress: 10,
-  },
-];
-
-const columnHelper = createColumnHelper<Person>();
-
-const defaultColumns = [
-  columnHelper.group({
-    id: "full name",
-    header: () => <span>Full name</span>,
-    columns: [
-      columnHelper.accessor("firstName", {
-        cell: (info) => info.getValue().toUpperCase(),
-        header: () => <span>First Name</span>,
-        footer: (info) => info.header.id,
-        meta: {
-          align: "center",
-        },
-      }),
-      columnHelper.accessor((row) => row.lastName, {
-        id: "lastName",
-        cell: (info) => <i>{info.getValue()}</i>,
-        header: () => <span>Last Name</span>,
-        footer: (info) => info.column.id,
-        meta: {
-          align: "center",
-        },
-      }),
-    ],
-  }),
-  columnHelper.accessor("age", {
-    header: () => "Age",
-    cell: (info) => info.renderValue(),
-    footer: (info) => info.column.id,
-    meta: {
-      align: "center",
-    },
-  }),
-  columnHelper.accessor("visits", {
-    header: () => <span>Visits</span>,
-    footer: (info) => info.column.id,
-    meta: {
-      align: "center",
-    },
-  }),
-  columnHelper.accessor("status", {
-    header: "Status",
-    footer: (info) => info.column.id,
-    meta: {
-      align: "center",
-    },
-  }),
-  columnHelper.accessor("progress", {
-    header: "Profile Progress",
-    footer: (info) => info.column.id,
-    meta: {
-      align: "center",
-    },
-  }),
-];
-
-const CommonTable: React.FC<TableProps> = ({
+const CommonTable = <T extends object>({
   loading,
-  data = defaultData,
-  columns = defaultColumns,
-  listTitles = ["First Name", "Last Name", "Age", "Visits", "Status", "Progress"],
-}) => {
-  const reactTable = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
+  data,
+  columns,
+  paginationProps = {
+    pageSize: PAGE_SIZE_OPTIONS[0],
+    pageIndex: DEFAULT_PAGE - 1, // start index = 0
+  },
+}: TableProps<T>) => {
+  const columnHelper = createColumnHelper<T>();
+
+  const listTitles: string[] = [];
+  const customColumns = columns.map((column) => {
+    listTitles.push(typeof column.heading === "function" ? column.heading() : column.heading);
+
+    return columnHelper.accessor(column.fieldName as any, {
+      header: column.heading,
+      footer: (info) => info.header.id,
+      meta: {
+        align: column?.align || "left",
+      },
+      cell: column?.customCell ? column.customCell : (info: any) => info.getValue(),
+    });
   });
 
+  const reactTable = useReactTable({
+    data,
+    columns: customColumns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: paginationProps,
+    },
+  });
+
+  const handleChangePage = (val: number) => {
+    reactTable.setPageIndex(val - 1); // page index is count from 0
+  };
+
   return (
-    <TableStyled className="table-container" listTitles={listTitles}>
+    <TableStyled className="table-container relative" listTitles={listTitles}>
       <table>
         <thead>
           {reactTable.getHeaderGroups().map((headerGroup) => (
@@ -136,21 +86,48 @@ const CommonTable: React.FC<TableProps> = ({
           ))}
         </thead>
         <tbody>
-          {reactTable.getRowModel().rows.map((row) => {
-            return (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => {
+          {loading ? (
+            <tr className="empty__row z-50 w-full absolute h-[500px]">
+              <td colSpan={listTitles.length}>
+                <Loader />
+              </td>
+            </tr>
+          ) : (
+            <>
+              {reactTable.getRowModel().rows.length > 0 ? (
+                reactTable.getRowModel().rows.map((row) => {
                   return (
-                    <td key={cell.id} align={(cell.column.columnDef.meta as any)?.align}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
+                    <tr key={row.id}>
+                      {row.getVisibleCells().map((cell) => {
+                        return (
+                          <td key={cell.id} align={(cell.column.columnDef.meta as any)?.align}>
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </td>
+                        );
+                      })}
+                    </tr>
                   );
-                })}
-              </tr>
-            );
-          })}
+                })
+              ) : (
+                <tr className="empty__row w-full h-[400px] bg-slate-50">
+                  <td colSpan={listTitles.length}>
+                    <Empty />
+                  </td>
+                </tr>
+              )}
+            </>
+          )}
         </tbody>
       </table>
+
+      <Pagination
+        className={`pagination-bar my-2 ${paginationProps?.className}`}
+        currentPage={reactTable.getState().pagination.pageIndex + 1}
+        pageSize={reactTable.getState().pagination.pageSize}
+        totalCount={data.length}
+        onPageChange={handleChangePage}
+        align={paginationProps?.align || "right"}
+      />
     </TableStyled>
   );
 };
