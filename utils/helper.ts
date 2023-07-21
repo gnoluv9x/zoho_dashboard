@@ -1,9 +1,15 @@
+import { FORMATS_OF_DATE } from "@/types/type";
+
 export const handleLogout = async () => {};
 
-export function formatVnDate(value: Date | null): string {
+export function formatDateToString(value: Date | null, dateFormat: FORMATS_OF_DATE): string {
   if (!value) return "";
 
-  return new Date(value).toLocaleDateString("vi-VI");
+  const day = value.getDate().toString().padStart(2, "0");
+  const month = (value.getMonth() + 1).toString().padStart(2, "0"); // Months are 0-indexed
+  const year = value.getFullYear().toString();
+
+  return dateFormat.replace("dd", day).replace("MM", month).replace("yyyy", year);
 }
 
 export const removeDuplicate = (list: any[], uniqueField: string) => {
@@ -41,4 +47,23 @@ export const convertIsoStringDateToFormated = (dateString: string) => {
   const seconds = dateFormat.getSeconds().toString();
 
   return hours + ":" + minutes + ":" + seconds + " " + date + "-" + month + "-" + year;
+};
+
+export const getDateValue = (dateString: string, formated: FORMATS_OF_DATE) => {
+  const separator = dateString.includes("/") ? "/" : "-";
+
+  const datesArray = dateString.split(separator);
+  const formatDateArray = formated.split(separator);
+
+  const dateIndex = formatDateArray.indexOf("dd");
+  const monthIndex = formatDateArray.indexOf("MM");
+  const yearIndex = formatDateArray.indexOf("yyyy");
+
+  const result = new Date(
+    parseInt(datesArray[yearIndex]),
+    parseInt(datesArray[monthIndex]) - 1,
+    parseInt(datesArray[dateIndex]),
+  );
+
+  return result;
 };

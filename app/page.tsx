@@ -1,9 +1,11 @@
 "use client";
 
+import Loader from "@/components/Common/Loading";
 import Filter from "@/components/Filters";
 import TaskTable from "@/components/TaskTable";
 import { ACCESS_TOKEN_KEY } from "@/constant";
 import { CommonInfo, FinalResponse, IdAndNameType } from "@/types";
+import { TaskDetail } from "@/types/type";
 import axiosClient from "@/utils/api";
 import { removeDuplicate } from "@/utils/helper";
 import { AxiosResponse } from "axios";
@@ -12,15 +14,14 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [respData, setRespData] = useState([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const [listSprints, setListSprints] = useState<any[]>([]);
   const [listStatus, setListStatus] = useState<CommonInfo[]>([]);
   const [listMembers, setListMembers] = useState<IdAndNameType[]>([]);
   const [listProjects, setListProjects] = useState<CommonInfo[]>([]);
-  const [listAllItems, setListAllItems] = useState<any[]>([]);
-  const [listRenderItems, setListRenderItems] = useState<any[]>([]);
+  const [listAllItems, setListAllItems] = useState<TaskDetail[]>([]);
+  const [listRenderItems, setListRenderItems] = useState<TaskDetail[]>([]);
 
   const router = useRouter();
 
@@ -82,15 +83,30 @@ export default function Home() {
   return (
     <main className="content_container">
       <div className="container mx-auto">
-        <Filter loading={loading} data={respData} />
-        <TaskTable
-          listSprints={listSprints}
-          data={listAllItems}
-          listStatus={listStatus}
-          listProjects={listProjects}
-          listMembers={listMembers}
-          loading={loading}
-        />
+        {loading ? (
+          <div className="relative h-[calc(100vh-56px)]">
+            <Loader />
+          </div>
+        ) : (
+          <>
+            <Filter
+              allItems={listAllItems}
+              loading={loading}
+              listStatus={listStatus}
+              listProjects={listProjects}
+              listMembers={listMembers}
+              onChangeRenderItems={setListRenderItems}
+            />
+            <TaskTable
+              listSprints={listSprints}
+              data={listAllItems}
+              listStatus={listStatus}
+              listProjects={listProjects}
+              listMembers={listMembers}
+              loading={loading}
+            />
+          </>
+        )}
       </div>
     </main>
   );

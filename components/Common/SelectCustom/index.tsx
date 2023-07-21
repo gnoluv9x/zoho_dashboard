@@ -1,14 +1,6 @@
-import { Option } from "@/types/type";
 import React from "react";
-import ReactSelect, { Props as SelectProps, StylesConfig } from "react-select";
-import { SelectStyled } from "./styled";
-
-interface SelectCustomProps extends SelectProps {
-  className?: string;
-  customStyles?: StylesConfig<any>;
-  onChangeValue: (value: Option<string | number>["value"]) => void;
-  options: Option<string | number>[];
-}
+import ReactSelect from "react-select";
+import { OptionTypes, SelectCustomProps } from "./type";
 
 const defaultStyles = {
   control: (styles: any) => ({
@@ -29,6 +21,10 @@ const SelectCustom: React.FC<SelectCustomProps> = ({
   onChangeValue,
   ...props
 }) => {
+  const handleChangeValue = (values: OptionTypes | OptionTypes[]) => {
+    onChangeValue(values);
+  };
+
   return (
     <ReactSelect
       isDisabled={isDisabled}
@@ -40,7 +36,7 @@ const SelectCustom: React.FC<SelectCustomProps> = ({
       styles={customStyles}
       className="select-custom-container"
       classNamePrefix="select-custom"
-      onChange={(option: any) => onChangeValue(option.value)}
+      onChange={handleChangeValue}
       {...props}
     />
   );

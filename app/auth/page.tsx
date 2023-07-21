@@ -2,7 +2,7 @@
 
 import { authApi } from "@/api/auth";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import React, { useState } from "react";
 
 interface ILoginFormValue {
   username: { value: string };
@@ -33,14 +33,14 @@ export default function Auth() {
 
     authApi
       .login({ username, password })
-      .then(resp => {
+      .then((resp) => {
         if (resp.status === 200) {
           router.push("/");
         } else {
           throw new Error(resp.data?.message || "Đăng nhập thất bại");
         }
       })
-      .catch(err => {
+      .catch((err) => {
         setLoginErrMessage(err.message);
       });
   };
@@ -58,7 +58,9 @@ export default function Auth() {
             <input className="input" type="text" placeholder="Username" name="username" />
             <input className="input" type="password" placeholder="Password" name="password" />
             <div className="text-red-500 py-2 h-5">{loginErrMessage}</div>
-            <button className="btn">LOGIN</button>
+            <button type="submit" className="btn">
+              LOGIN
+            </button>
           </div>
         </div>
       </form>

@@ -20,9 +20,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="en">
       <body className={inter.className}>
         <Header />
-        <Suspense fallback={<div>Loading...</div>}>
-          <>{children}</>
-        </Suspense>
+        <>{children}</>
       </body>
     </html>
   );

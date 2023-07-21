@@ -1,3 +1,6 @@
+import Pagination from "@/components/Pagination";
+import { DEFAULT_PAGE, PAGE_SIZE_OPTIONS } from "@/constant";
+import { TableColumnCutom } from "@/types/table";
 import {
   PaginationState,
   createColumnHelper,
@@ -6,14 +9,8 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import React from "react";
-import { TableStyled } from "./styled";
-import { DEFAULT_PAGE, PAGE_SIZE_OPTIONS } from "@/constant";
-import Pagination from "@/components/Pagination";
-import { TableColumnCutom } from "@/types/table";
 import Empty from "../Empty";
-import Loading from "@/app/loading";
-import Loader from "../Loading";
+import { TableStyled } from "./styled";
 
 interface TableProps<T> {
   loading?: boolean;
@@ -86,36 +83,26 @@ const CommonTable = <T extends object>({
           ))}
         </thead>
         <tbody>
-          {loading ? (
-            <tr className="empty__row z-50 w-full absolute h-[500px]">
+          {reactTable.getRowModel().rows.length > 0 ? (
+            reactTable.getRowModel().rows.map((row) => {
+              return (
+                <tr key={row.id}>
+                  {row.getVisibleCells().map((cell) => {
+                    return (
+                      <td key={cell.id} align={(cell.column.columnDef.meta as any)?.align}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })
+          ) : (
+            <tr className="empty__row w-full h-[400px] bg-slate-50">
               <td colSpan={listTitles.length}>
-                <Loader />
+                <Empty />
               </td>
             </tr>
-          ) : (
-            <>
-              {reactTable.getRowModel().rows.length > 0 ? (
-                reactTable.getRowModel().rows.map((row) => {
-                  return (
-                    <tr key={row.id}>
-                      {row.getVisibleCells().map((cell) => {
-                        return (
-                          <td key={cell.id} align={(cell.column.columnDef.meta as any)?.align}>
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr className="empty__row w-full h-[400px] bg-slate-50">
-                  <td colSpan={listTitles.length}>
-                    <Empty />
-                  </td>
-                </tr>
-              )}
-            </>
           )}
         </tbody>
       </table>

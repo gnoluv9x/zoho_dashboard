@@ -25,3 +25,9 @@ export type TaskDetail = {
   priorityId: string;
   userWork: string[];
 };
+
+export enum FORMATS_OF_DATE {
+  DEFAULT = "dd/MM/yyyy",
+  MONTH_FIRST = "MM/dd/yyyy",
+  YEAR_FIRST = "yyyy/MM/dd",
+}
