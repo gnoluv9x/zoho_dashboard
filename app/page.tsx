@@ -12,6 +12,7 @@ import { AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useAppContext } from "./context/App";
 
 export default function Home() {
   const [loading, setLoading] = useState<boolean>(false);
@@ -24,6 +25,7 @@ export default function Home() {
   const [listRenderItems, setListRenderItems] = useState<TaskDetail[]>([]);
 
   const router = useRouter();
+  const appContext = useAppContext();
 
   const accessToken = Cookies.get(ACCESS_TOKEN_KEY);
 
@@ -45,7 +47,7 @@ export default function Home() {
     // list members
     const listAllItems: any[] = [];
     const listAllMembers: any[] = [];
-    (data.items || []).forEach((item: any) => {
+    (data.items || []).forEach((item: any, idx: number) => {
       item.sprints.forEach((sprint: any) => {
         const listTaskOfSprint = sprint.items.tasks;
         const listMemberOfSprint = sprint.items.members;
@@ -80,6 +82,10 @@ export default function Home() {
       router.push("/auth");
     }
   }, [accessToken, router]);
+
+  useEffect(() => {
+    appContext?.setTotalTasks(listRenderItems.length);
+  }, [listRenderItems, appContext]);
 
   return (
     <main className="content_container">

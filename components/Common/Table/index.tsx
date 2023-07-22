@@ -65,7 +65,7 @@ const CommonTable = <T extends object>({
       <table>
         <thead>
           {reactTable.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="table-head">
+            <tr key={headerGroup.id} className="table-head bg-blue-600">
               {headerGroup.headers.map((header) => {
                 return (
                   <th
@@ -113,6 +113,7 @@ const CommonTable = <T extends object>({
         totalCount={data.length}
         onPageChange={handleChangePage}
         align={paginationProps?.align || "right"}
+        siblingCount={2}
       />
     </TableStyled>
   );

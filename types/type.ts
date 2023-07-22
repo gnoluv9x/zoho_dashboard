@@ -31,3 +31,8 @@ export enum FORMATS_OF_DATE {
   MONTH_FIRST = "MM/dd/yyyy",
   YEAR_FIRST = "yyyy/MM/dd",
 }
+
+export type AppContextType = {
+  totalTasks: number;
+  setTotalTasks: (totalTasks: number) => void;
+};

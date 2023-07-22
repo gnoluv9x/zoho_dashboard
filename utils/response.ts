@@ -13,3 +13,10 @@ export const emptyResponse = (message: string = "Empty data") => {
     headers: { "content-type": "application/json" },
   });
 };
+
+export const errorResponse = () => {
+  return new NextResponse(JSON.stringify({ success: false, message: "Not found" }), {
+    status: 404,
+    headers: { "content-type": "application/json" },
+  });
+};

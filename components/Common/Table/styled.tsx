@@ -43,7 +43,7 @@ export const TableStyled = styled("div")<{ $listTitles: string[] }>`
   }
   table thead tr {
     height: auto;
-    background: #222222;
+    /* background: #222222; */
     & > th {
       padding: 0.75rem;
     }
