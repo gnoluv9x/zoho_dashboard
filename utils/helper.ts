@@ -2,16 +2,6 @@ import { FORMATS_OF_DATE } from "@/types/type";
 
 export const handleLogout = async () => {};
 
-export function formatDateToString(value: Date | null, dateFormat: FORMATS_OF_DATE): string {
-  if (!value) return "";
-
-  const day = value.getDate().toString().padStart(2, "0");
-  const month = (value.getMonth() + 1).toString().padStart(2, "0"); // Months are 0-indexed
-  const year = value.getFullYear().toString();
-
-  return dateFormat.replace("dd", day).replace("MM", month).replace("yyyy", year);
-}
-
 export const removeDuplicate = (list: any[], uniqueField: string) => {
   return [...(new Map(list.map((item) => [item[uniqueField], item])).values() as any)];
 };
@@ -49,7 +39,7 @@ export const convertIsoStringDateToFormated = (dateString: string) => {
   return hours + ":" + minutes + ":" + seconds + " " + date + "-" + month + "-" + year;
 };
 
-export const getDateValue = (dateString: string, formated: FORMATS_OF_DATE) => {
+export const getDateValue = (dateString: string, formated: FORMATS_OF_DATE): Date => {
   const separator = dateString.includes("/") ? "/" : "-";
 
   const datesArray = dateString.split(separator);
@@ -67,3 +57,13 @@ export const getDateValue = (dateString: string, formated: FORMATS_OF_DATE) => {
 
   return result;
 };
+
+export function formatDateToString(value: Date | null, dateFormat: FORMATS_OF_DATE): string {
+  if (!value) return "";
+
+  const day = value.getDate().toString().padStart(2, "0");
+  const month = (value.getMonth() + 1).toString().padStart(2, "0"); // Months are 0-indexed
+  const year = value.getFullYear().toString();
+
+  return dateFormat.replace("dd", day).replace("MM", month).replace("yyyy", year);
+}

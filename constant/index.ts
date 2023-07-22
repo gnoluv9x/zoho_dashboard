@@ -13,3 +13,7 @@ export const DEFAULT_PAGE = 1;
 export const PAGE_SIZE_OPTIONS = [10, 20, 30];
 
 export const ALIGN_VALUE = { left: "flex-start", right: "flex-end", center: "center" };
+
+export const DEFAULT_START_TIME = "2020-01-01";
+
+export const DEFAULT_END_TIME = "2050-01-01";

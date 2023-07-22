@@ -56,6 +56,7 @@ export default function Home() {
     });
 
     setListAllItems(listAllItems);
+    setListRenderItems(listAllItems);
     setListMembers(removeDuplicate(listAllMembers, "id"));
   };
 
@@ -99,7 +100,7 @@ export default function Home() {
             />
             <TaskTable
               listSprints={listSprints}
-              data={listAllItems}
+              data={listRenderItems}
               listStatus={listStatus}
               listProjects={listProjects}
               listMembers={listMembers}

@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import DatepickerCustom from "../Common/DatePicker";
 import SelectCustom from "../Common/SelectCustom";
-import { Option, TaskDetail } from "@/types/type";
+import { FORMATS_OF_DATE, Option, TaskDetail } from "@/types/type";
 import { CommonInfo, IdAndNameType } from "@/types";
 import { OptionTypes } from "../Common/SelectCustom/type";
+import { getDateValue } from "@/utils/helper";
+import { DEFAULT_END_TIME, DEFAULT_START_TIME } from "@/constant";
 
 interface FilterProps {
   loading: boolean;
@@ -17,19 +19,21 @@ interface FilterProps {
 type FiltersType = {
   startedDateRange: { start: string; end: string };
   createdDateRange: { start: string; end: string };
-  status: string;
-  members: string[];
-  project: string;
+  status: Option<string> | null;
+  members: Option<string>[];
+  project: Option<string> | null;
+};
+
+export const defaultFilters: FiltersType = {
+  startedDateRange: { start: "", end: "" },
+  createdDateRange: { start: "", end: "" },
+  status: null,
+  members: [],
+  project: null,
 };
 
 const Filter: React.FC<FilterProps> = ({ listMembers, listProjects, listStatus, allItems, onChangeRenderItems }) => {
-  const [filters, setFilters] = useState<FiltersType>({
-    startedDateRange: { start: "", end: "" },
-    createdDateRange: { start: "", end: "" },
-    status: "",
-    members: [],
-    project: "",
-  });
+  const [filters, setFilters] = useState<FiltersType>(defaultFilters);
 
   const handleChangeDate = (
     value: string | null,
@@ -47,11 +51,60 @@ const Filter: React.FC<FilterProps> = ({ listMembers, listProjects, listStatus, 
   };
 
   const handleClearFilter = () => {
+    setFilters(defaultFilters);
     onChangeRenderItems(allItems);
   };
 
   const handleSubmitSearch = () => {
-    console.log("Debug_here filters: ", filters);
+    const listMemberIds = filters.members.map((memb) => memb.value);
+
+    const startedDateStartTime = filters.startedDateRange.start
+      ? getDateValue(filters.startedDateRange.start, FORMATS_OF_DATE["DEFAULT"])
+      : new Date(DEFAULT_START_TIME);
+    const startedDateEndTime = filters.startedDateRange.end
+      ? getDateValue(filters.startedDateRange.end, FORMATS_OF_DATE["DEFAULT"])
+      : new Date(DEFAULT_END_TIME);
+    const createdDateStartTime = filters.createdDateRange.start
+      ? getDateValue(filters.createdDateRange.start, FORMATS_OF_DATE["DEFAULT"])
+      : new Date(DEFAULT_START_TIME);
+    const createdDateEndTime = filters.createdDateRange.end
+      ? getDateValue(filters.createdDateRange.end, FORMATS_OF_DATE["DEFAULT"])
+      : new Date(DEFAULT_END_TIME);
+
+    const filteredItems = allItems.filter((taskItem: TaskDetail) => {
+      const startedDate = taskItem.timeStart ? new Date(taskItem.timeStart) : "";
+      const createdDate = taskItem.timeCreate ? new Date(taskItem.timeCreate) : "";
+
+      // check status
+      if (filters.status?.value && taskItem.statusTask !== filters.status.value) {
+        return false;
+      }
+
+      // check project
+      if (filters.project?.value && taskItem.idProject !== filters.project.value) {
+        return false;
+      }
+
+      // check started date
+      if (startedDate && (startedDate < startedDateStartTime || startedDate > startedDateEndTime)) {
+        return false;
+      }
+
+      // check created date
+      if (createdDate && (createdDate < createdDateStartTime || createdDate > createdDateEndTime)) {
+        return false;
+      }
+
+      // check members
+      if (listMemberIds.length !== 0) {
+        const userWork = taskItem.userWork.filter((userId) => listMemberIds.includes(userId));
+        if (userWork.length === 0) return false;
+      }
+
+      return true;
+    });
+
+    onChangeRenderItems(filteredItems);
   };
 
   return (
@@ -63,6 +116,7 @@ const Filter: React.FC<FilterProps> = ({ listMembers, listProjects, listStatus, 
             <DatepickerCustom
               initialValue={null}
               placeholder="Ngày bắt đầu"
+              value={filters.startedDateRange.start}
               isClearable
               onDateChange={(value) => handleChangeDate(value, "startedDateRange", "start")}
               maxDate={filters.startedDateRange.end}
@@ -72,6 +126,7 @@ const Filter: React.FC<FilterProps> = ({ listMembers, listProjects, listStatus, 
             <DatepickerCustom
               initialValue={null}
               placeholder="Ngày kết thúc"
+              value={filters.startedDateRange.end}
               isClearable
               onDateChange={(value) => handleChangeDate(value, "startedDateRange", "end")}
               minDate={filters.startedDateRange.start}
@@ -87,6 +142,7 @@ const Filter: React.FC<FilterProps> = ({ listMembers, listProjects, listStatus, 
               initialValue={null}
               placeholder="Ngày bắt đầu"
               isClearable
+              value={filters.createdDateRange.start}
               onDateChange={(value) => handleChangeDate(value, "createdDateRange", "start")}
               maxDate={filters.createdDateRange.end}
             />
@@ -95,6 +151,7 @@ const Filter: React.FC<FilterProps> = ({ listMembers, listProjects, listStatus, 
             <DatepickerCustom
               initialValue={null}
               placeholder="Ngày kết thúc"
+              value={filters.createdDateRange.end}
               isClearable
               onDateChange={(value) => handleChangeDate(value, "createdDateRange", "end")}
               minDate={filters.createdDateRange.start}
@@ -105,27 +162,30 @@ const Filter: React.FC<FilterProps> = ({ listMembers, listProjects, listStatus, 
       <div className="filter__status">
         <h5 className="font-bold">Status</h5>
         <SelectCustom
+          value={filters.status}
           onChangeValue={(value: OptionTypes | OptionTypes[]) => handleChangeSelectValue(value, "status")}
           options={listStatus.map(({ id, name }) => ({ value: id, label: name }))}
         />
       </div>
-      <div className="filter__assignedTo">
+      <div className="filter__projects ">
+        <h5 className="font-bold">Projects</h5>
+        <SelectCustom
+          value={filters.project}
+          onChangeValue={(value: OptionTypes | OptionTypes[]) => handleChangeSelectValue(value, "project")}
+          options={listProjects.map(({ id, name }) => ({ value: id, label: name }))}
+        />
+      </div>
+      <div className="filter__assignedTo col-span-2">
         <h5 className="font-bold">Assigned to</h5>
         <SelectCustom
+          value={filters.members}
           onChangeValue={(value: OptionTypes | OptionTypes[]) => handleChangeSelectValue(value, "members")}
           options={listMembers.map(({ id, name }) => ({ value: id, label: name }))}
           isMulti
           closeMenuOnSelect={false}
         />
       </div>
-      <div className="filter__projects">
-        <h5 className="font-bold">Projects</h5>
-        <SelectCustom
-          onChangeValue={(value: OptionTypes | OptionTypes[]) => handleChangeSelectValue(value, "project")}
-          options={listProjects.map(({ id, name }) => ({ value: id, label: name }))}
-        />
-      </div>
-      <div className="actions flex justify-center items-end gap-x-2">
+      <div className="actions flex justify-start items-end gap-x-2">
         <div className="filter__btnSubmit">
           <button onClick={handleSubmitSearch} className="px-4 py-[6px] text-white bg-blue-600 rounded-md">
             Search

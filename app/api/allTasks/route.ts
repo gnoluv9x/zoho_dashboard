@@ -1,22 +1,10 @@
-import { ACCESS_TOKEN_KEY, INVALID_TOKEN_CODE, REVALIDATE_TIME } from "@/constant";
-import {
-  AllSprintData,
-  CommonInfo,
-  IdAndNameType,
-  ZohoItemDetail,
-  ItemsResponse,
-  ProjectResponse,
-  FinalResponse,
-} from "@/types";
+import { ACCESS_TOKEN_KEY, INVALID_TOKEN_CODE } from "@/constant";
+import { AllSprintData, FinalResponse, IdAndNameType, ProjectResponse, ZohoItemDetail } from "@/types";
 import { TaskDetail } from "@/types/type";
-import { getItems, getListStatus, getSprint } from "@/utils/listApis";
+import { getItems, getListStatus, getProjects, getSprint, getTeams } from "@/utils/listApis";
 import { authenticationFailed, emptyResponse } from "@/utils/response";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-
-const TEAM_ID_URL = "https://sprintsapi.zoho.com/zsapi/teams/";
-const getProjectUrl = (teamId: string): string =>
-  `https://sprintsapi.zoho.com/zsapi/team/${teamId}/projects/?action=allprojects&index=1&range=10&viewby=0`;
 
 export async function GET(req: Request) {
   // check authen
@@ -26,15 +14,7 @@ export async function GET(req: Request) {
   if (!accessToken) return authenticationFailed();
 
   // get teamId
-  const teamResp = await fetch(TEAM_ID_URL, {
-    method: "GET",
-    headers: {
-      Authorization: `Zoho-oauthtoken ${accessToken}`,
-    },
-    redirect: "manual",
-    next: { revalidate: REVALIDATE_TIME },
-  });
-  const teamIdData = await teamResp.json();
+  const teamIdData = await getTeams(accessToken);
 
   if (teamIdData?.status === "failed" && teamIdData?.code === INVALID_TOKEN_CODE)
     return authenticationFailed("Invalid token");
@@ -48,15 +28,7 @@ export async function GET(req: Request) {
   const teamId = teamIdData?.portals[0].zsoid;
 
   // get all projects
-  const projectResp = await fetch(getProjectUrl(teamId), {
-    method: "GET",
-    headers: {
-      Authorization: `Zoho-oauthtoken ${accessToken}`,
-    },
-    redirect: "manual",
-    next: { revalidate: REVALIDATE_TIME },
-  });
-  const projectData = await projectResp.json();
+  const projectData = await getProjects(teamId, accessToken);
 
   if (projectData?.status === "failed" && projectData?.code === INVALID_TOKEN_CODE)
     return authenticationFailed("Invalid token");

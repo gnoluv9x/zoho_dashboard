@@ -1,12 +1,12 @@
 import styled, { css } from "styled-components";
 
-function generateContent(props: { listTitles: string[] }) {
+function generateContent(props: { $listTitles: string[] }) {
   let styles = "";
 
-  for (let i = 0; i < props.listTitles.length; i += 1) {
+  for (let i = 0; i < props.$listTitles.length; i += 1) {
     styles += `
       table tbody tr td:nth-child(${i + 1}):before {
-        content: "${props.listTitles[i]}";
+        content: "${props.$listTitles[i]}";
       }
      `;
   }
@@ -16,7 +16,7 @@ function generateContent(props: { listTitles: string[] }) {
   `;
 }
 
-export const TableStyled = styled.div<{ listTitles: string[] }>`
+export const TableStyled = styled("div")<{ $listTitles: string[] }>`
   width: 100%;
   margin: 1rem auto;
 

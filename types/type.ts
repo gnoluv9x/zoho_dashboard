@@ -6,7 +6,7 @@ export type StringOrNumber = string | number;
 
 export type Option<T> = {
   value: T;
-  label: string;
+  label: T | string;
 };
 
 export type TaskDetail = {

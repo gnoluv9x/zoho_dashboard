@@ -19,6 +19,7 @@ const SelectCustom: React.FC<SelectCustomProps> = ({
   customStyles = defaultStyles,
   options,
   onChangeValue,
+  value,
   ...props
 }) => {
   const handleChangeValue = (values: OptionTypes | OptionTypes[]) => {
@@ -31,6 +32,7 @@ const SelectCustom: React.FC<SelectCustomProps> = ({
       isLoading={isLoading}
       isSearchable={isSearchable}
       name={name}
+      value={value}
       options={options}
       placeholder={placeholder}
       styles={customStyles}

@@ -2,6 +2,37 @@ import { REVALIDATE_TIME } from "@/constant";
 import { ZohoItemDetail } from "@/types";
 import axios from "axios";
 
+const TEAM_ID_URL = "https://sprintsapi.zoho.com/zsapi/teams/";
+
+export async function getTeams(accessToken: string) {
+  const response = await fetch(TEAM_ID_URL, {
+    method: "GET",
+    headers: {
+      Authorization: `Zoho-oauthtoken ${accessToken}`,
+    },
+    redirect: "manual",
+    next: { revalidate: REVALIDATE_TIME },
+  });
+
+  return await response.json();
+}
+
+export async function getProjects(teamId: string, accessToken: string) {
+  const response = await fetch(
+    `https://sprintsapi.zoho.com/zsapi/team/${teamId}/projects/?action=allprojects&index=1&range=10&viewby=0`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Zoho-oauthtoken ${accessToken}`,
+      },
+      redirect: "manual",
+      next: { revalidate: REVALIDATE_TIME },
+    },
+  );
+
+  return await response.json();
+}
+
 export async function getSprint(teamId: string, projectId: string, accessToken: string) {
   const response = await fetch(
     `https://sprintsapi.zoho.com/zsapi/team/${teamId}/projects/${projectId}/sprints/?action=data&index=1&range=100&type=%5B1%2C2%2C3%2C4%5D`,

@@ -23,7 +23,6 @@ interface TableProps<T> {
 }
 
 const CommonTable = <T extends object>({
-  loading,
   data,
   columns,
   paginationProps = {
@@ -62,7 +61,7 @@ const CommonTable = <T extends object>({
   };
 
   return (
-    <TableStyled className="table-container relative" listTitles={listTitles}>
+    <TableStyled className="table-container relative" $listTitles={listTitles}>
       <table>
         <thead>
           {reactTable.getHeaderGroups().map((headerGroup) => (

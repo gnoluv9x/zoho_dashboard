@@ -8,4 +8,5 @@ export interface SelectCustomProps extends SelectProps {
   customStyles?: StylesConfig<any>;
   onChangeValue: (value: OptionTypes | OptionTypes[]) => void;
   options: Option<string | number>[];
+  value: Option<string | number> | Option<string | number>[] | null;
 }
