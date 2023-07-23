@@ -39,7 +39,7 @@ export default function Auth() {
         } else {
           throw new Error(resp.data?.message || "Đăng nhập thất bại");
         }
-      })
+        })
       .catch((err) => {
         setLoginErrMessage(err.message);
       });

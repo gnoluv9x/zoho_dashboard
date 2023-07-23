@@ -4,7 +4,7 @@ import SelectCustom from "../Common/SelectCustom";
 import { FORMATS_OF_DATE, Option, TaskDetail } from "@/types/type";
 import { CommonInfo, IdAndNameType } from "@/types";
 import { OptionTypes } from "../Common/SelectCustom/type";
-import { getDateValue } from "@/utils/helper";
+import { getDateValue, sortFollowDate } from "@/utils/helper";
 import { DEFAULT_END_TIME, DEFAULT_START_TIME } from "@/constant";
 
 interface FilterProps {
@@ -103,6 +103,9 @@ const Filter: React.FC<FilterProps> = ({ listMembers, listProjects, listStatus, 
 
       return true;
     });
+
+    // sort list follow created time
+    sortFollowDate(filteredItems, "timeCreate", "desc");
 
     onChangeRenderItems(filteredItems);
   };

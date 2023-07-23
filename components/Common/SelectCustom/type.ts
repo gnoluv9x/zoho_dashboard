@@ -3,7 +3,7 @@ import { Props as SelectProps, StylesConfig } from "react-select";
 
 export type OptionTypes = Option<string | number>;
 
-export interface SelectCustomProps extends SelectProps {
+export interface SelectCustomProps extends Omit<SelectProps, "onChange"> {
   className?: string;
   customStyles?: StylesConfig<any>;
   onChangeValue: (value: OptionTypes | OptionTypes[]) => void;

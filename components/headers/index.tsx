@@ -26,7 +26,7 @@ const Header: React.FC<HeaderProps> = () => {
   };
 
   return (
-    <header className="px-5 h-14 flex justify-end items-center bg-blue-600 text-white text-2xl font-bold">
+    <header className="px-5 fixed z-header top-0 left-0 right-0 h-14 flex justify-end items-center bg-blue-600 text-white text-2xl font-bold">
       <div className="flex flex-row w-full justify-between text-white">
         <div className="flex items-center">Total tasks: {appContext?.totalTasks}</div>
         <div className="text-white flex">

@@ -222,9 +222,3 @@ html {
     right: -48%;
   }
 }
-
-.content_container {
-  min-height: calc(100vh - 3.5rem);
-  width: 100%;
-  padding: 1rem;
-}

@@ -7,7 +7,7 @@ import { ACCESS_TOKEN_KEY } from "@/constant";
 import { CommonInfo, FinalResponse, IdAndNameType } from "@/types";
 import { TaskDetail } from "@/types/type";
 import axiosClient from "@/utils/api";
-import { removeDuplicate } from "@/utils/helper";
+import { removeDuplicate, sortFollowDate } from "@/utils/helper";
 import { AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
@@ -45,8 +45,8 @@ export default function Home() {
 
     // list all items
     // list members
-    const listAllItems: any[] = [];
-    const listAllMembers: any[] = [];
+    const listAllItems: TaskDetail[] = [];
+    const listAllMembers: TaskDetail[] = [];
     (data.items || []).forEach((item: any, idx: number) => {
       item.sprints.forEach((sprint: any) => {
         const listTaskOfSprint = sprint.items.tasks;
@@ -56,6 +56,9 @@ export default function Home() {
         listAllMembers.push(...listMemberOfSprint);
       });
     });
+
+    // sort follow created date
+    sortFollowDate(listAllItems, "timeCreate", "desc");
 
     setListAllItems(listAllItems);
     setListRenderItems(listAllItems);
@@ -88,7 +91,7 @@ export default function Home() {
   }, [listRenderItems, appContext]);
 
   return (
-    <main className="content_container">
+    <main className="w-full pt-16 px-3 h-[calc(100vh-3.5rem)]">
       <div className="container mx-auto">
         {loading ? (
           <div className="relative h-[calc(100vh-56px)]">

@@ -1,12 +1,14 @@
 import React from "react";
 import ReactSelect from "react-select";
 import { OptionTypes, SelectCustomProps } from "./type";
+import MultiValueContainer from "./MultiValueContainer";
+import { SelectWrapperStyled } from "./styled";
 
 const defaultStyles = {
   control: (styles: any) => ({
     ...styles,
     minHeight: "36px",
-    height: "36px",
+    height: "auto",
   }),
 };
 

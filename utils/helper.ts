@@ -67,3 +67,11 @@ export function formatDateToString(value: Date | null, dateFormat: FORMATS_OF_DA
 
   return dateFormat.replace("dd", day).replace("MM", month).replace("yyyy", year);
 }
+
+export const sortFollowDate = (lists: any[], fieldSort: string, order: "asc" | "desc"): void => {
+  if (order === "asc") {
+    lists.sort((a, b) => new Date(a[fieldSort]).getTime() - new Date(b[fieldSort]).getTime());
+  } else {
+    lists.sort((a, b) => new Date(b[fieldSort]).getTime() - new Date(a[fieldSort]).getTime());
+  }
+};

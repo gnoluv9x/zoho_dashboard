@@ -13,6 +13,7 @@ module.exports = {
       },
       zIndex: {
         loading: "100",
+        header: "99",
       },
     },
   },
