@@ -79,7 +79,7 @@ export const TableStyled = styled("div")<{ $listTitles: string[] }>`
     cursor: pointer;
   }
 
-  @media screen and (max-width: 992px) {
+  @media screen and (max-width: 1023.98px) {
     table {
       display: block;
     }
@@ -93,8 +93,10 @@ export const TableStyled = styled("div")<{ $listTitles: string[] }>`
       display: none;
     }
     table tbody tr {
-      height: auto;
       padding: 37px 0;
+      &:not(.empty__row) {
+        height: auto;
+      }
     }
     table tbody tr td {
       padding-left: 31% !important;
@@ -135,7 +137,7 @@ export const TableStyled = styled("div")<{ $listTitles: string[] }>`
     }
   }
 
-  @media (max-width: 576px) {
+  @media (max-width: 640px) {
     table th {
       border: none;
     }

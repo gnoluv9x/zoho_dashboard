@@ -1,19 +1,14 @@
+import { useAppContext } from "@/app/context/App";
+import { DEFAULT_END_TIME, DEFAULT_START_TIME } from "@/constant";
+import { FORMATS_OF_DATE, Option, TaskDetail } from "@/types/type";
+import { getDateValue, sortFollowDate } from "@/utils/helper";
 import React, { useState } from "react";
 import DatepickerCustom from "../Common/DatePicker";
 import SelectCustom from "../Common/SelectCustom";
-import { FORMATS_OF_DATE, Option, TaskDetail } from "@/types/type";
-import { CommonInfo, IdAndNameType } from "@/types";
 import { OptionTypes } from "../Common/SelectCustom/type";
-import { getDateValue, sortFollowDate } from "@/utils/helper";
-import { DEFAULT_END_TIME, DEFAULT_START_TIME } from "@/constant";
 
 interface FilterProps {
-  loading: boolean;
-  listStatus: CommonInfo[];
-  listProjects: CommonInfo[];
-  listMembers: IdAndNameType[];
   allItems: TaskDetail[];
-  onChangeRenderItems: React.Dispatch<React.SetStateAction<TaskDetail[]>>;
 }
 
 type FiltersType = {
@@ -32,8 +27,10 @@ export const defaultFilters: FiltersType = {
   project: null,
 };
 
-const Filter: React.FC<FilterProps> = ({ listMembers, listProjects, listStatus, allItems, onChangeRenderItems }) => {
+const Filter: React.FC<FilterProps> = ({ allItems }) => {
   const [filters, setFilters] = useState<FiltersType>(defaultFilters);
+
+  const appContext = useAppContext();
 
   const handleChangeDate = (
     value: string | null,
@@ -52,7 +49,7 @@ const Filter: React.FC<FilterProps> = ({ listMembers, listProjects, listStatus, 
 
   const handleClearFilter = () => {
     setFilters(defaultFilters);
-    onChangeRenderItems(allItems);
+    appContext?.setRenderItems(allItems);
   };
 
   const handleSubmitSearch = () => {
@@ -107,12 +104,12 @@ const Filter: React.FC<FilterProps> = ({ listMembers, listProjects, listStatus, 
     // sort list follow created time
     sortFollowDate(filteredItems, "timeCreate", "desc");
 
-    onChangeRenderItems(filteredItems);
+    appContext?.setRenderItems(filteredItems);
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-x-2">
-      <div className="filter__startDate col-span-2">
+    <div className="grid grid-cols-12 gap-x-2">
+      <div className="filter__startDate col-span-12 md:col-span-6 lg:col-span-4">
         <h5 className="font-bold">Date started</h5>
         <div className="grid grid-cols-2 gap-3">
           <div>
@@ -137,7 +134,7 @@ const Filter: React.FC<FilterProps> = ({ listMembers, listProjects, listStatus, 
           </div>
         </div>
       </div>
-      <div className="filter__createdDate col-span-2">
+      <div className="filter__createdDate col-span-12 md:col-span-6 lg:col-span-4">
         <h5 className="font-bold">Date created</h5>
         <div className="grid grid-cols-2 gap-3">
           <div className="">
@@ -162,33 +159,39 @@ const Filter: React.FC<FilterProps> = ({ listMembers, listProjects, listStatus, 
           </div>
         </div>
       </div>
-      <div className="filter__status">
+      <div className="filter__status col-span-12 md:col-span-6 lg:col-span-2">
         <h5 className="font-bold">Status</h5>
         <SelectCustom
           value={filters.status}
           onChangeValue={(value: OptionTypes | OptionTypes[]) => handleChangeSelectValue(value, "status")}
-          options={listStatus.map(({ id, name }) => ({ value: id, label: name }))}
+          options={
+            appContext?.listStatus ? appContext?.listStatus.map(({ id, name }) => ({ value: id, label: name })) : []
+          }
         />
       </div>
-      <div className="filter__projects ">
+      <div className="filter__projects col-span-12 md:col-span-6 lg:col-span-2">
         <h5 className="font-bold">Projects</h5>
         <SelectCustom
           value={filters.project}
           onChangeValue={(value: OptionTypes | OptionTypes[]) => handleChangeSelectValue(value, "project")}
-          options={listProjects.map(({ id, name }) => ({ value: id, label: name }))}
+          options={
+            appContext?.listProjects ? appContext?.listProjects.map(({ id, name }) => ({ value: id, label: name })) : []
+          }
         />
       </div>
-      <div className="filter__assignedTo col-span-2">
+      <div className="filter__assignedTo col-span-12 md:col-span-8 lg:col-span-4">
         <h5 className="font-bold">Assigned to</h5>
         <SelectCustom
           value={filters.members}
           onChangeValue={(value: OptionTypes | OptionTypes[]) => handleChangeSelectValue(value, "members")}
-          options={listMembers.map(({ id, name }) => ({ value: id, label: name }))}
+          options={
+            appContext?.listMembers ? appContext?.listMembers.map(({ id, name }) => ({ value: id, label: name })) : []
+          }
           isMulti
           closeMenuOnSelect={false}
         />
       </div>
-      <div className="actions flex justify-start items-end gap-x-2">
+      <div className="mt-2 md:mt-0 flex justify-start md:justify-end xl:justify-start items-end gap-x-2 col-span-12 md:col-span-4 lg:col-span-2">
         <div className="filter__btnSubmit">
           <button onClick={handleSubmitSearch} className="px-4 py-[6px] text-white bg-blue-600 rounded-md">
             Search

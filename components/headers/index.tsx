@@ -7,6 +7,11 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { ACCESS_TOKEN_KEY } from "@/constant";
 import { useAppContext } from "@/app/context/App";
+import Image from "next/image";
+import * as XLSX from "xlsx";
+import { TaskDetail } from "@/types/type";
+import { convertIsoStringDateToFormated, getFibonancyFromIndex } from "@/utils/helper";
+import { IdAndNameType } from "@/types";
 
 interface HeaderProps {}
 
@@ -25,10 +30,77 @@ const Header: React.FC<HeaderProps> = () => {
     router.push("/auth");
   };
 
+  const handleExport = () => {
+    const dataItems = appContext?.renderItems || [];
+    const customData =
+      dataItems?.length > 0
+        ? dataItems?.map((item: TaskDetail, ind: number) => {
+            const sprintId = item.sprintId;
+            const spintItem: IdAndNameType | undefined = appContext?.listSprints.find(
+              (sprint) => sprint.id === sprintId,
+            );
+            const status = appContext?.listStatus.find((status) => status.id === item.statusTask);
+            const timeCreated: any = item.timeCreate !== "-1" ? convertIsoStringDateToFormated(item.timeCreate) : "-";
+            const timeStart: any = item.timeStart !== "-1" ? convertIsoStringDateToFormated(item.timeStart) : "-";
+            const project = appContext?.listProjects.find((proj) => proj.id === item.idProject);
+
+            const listUserWorks: string[] = item.userWork;
+            if (listUserWorks.length === 0) return "-";
+
+            const resultUsers: string[] = [];
+            appContext?.listMembers.forEach((member) => {
+              listUserWorks.forEach((userId) => {
+                if (member.id === userId) {
+                  resultUsers.push(member.name);
+                }
+              });
+            });
+
+            return {
+              "Name task": item?.name,
+              "Id task": item?.idTaskNumber,
+              Duration: item?.estimate === "-1" ? "" : item?.estimate,
+              "Estimate point": getFibonancyFromIndex(Number(item.estimatePoint)),
+              "Id sprint": spintItem?.name ?? "",
+              "Status task": status?.name ?? "",
+              "Date created": timeCreated,
+              "Date started": timeStart,
+              Project: project?.name || "",
+              "Assigned to": resultUsers.join(","),
+            };
+          })
+        : [
+            {
+              "Name task": null,
+              "Id task": null,
+              Duration: null,
+              "Extimate point": null,
+              "Id Sprint": null,
+              "Status task": null,
+              "Date created": null,
+              "Date started": null,
+              Project: null,
+              "Assigned to": null,
+            },
+          ];
+
+    // Create a new workbook
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(customData);
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    XLSX.writeFile(workbook, "DS_Tasks_" + Date.now() + ".xlsx");
+  };
+
   return (
-    <header className="px-5 fixed z-header top-0 left-0 right-0 h-14 flex justify-end items-center bg-blue-600 text-white text-2xl font-bold">
+    <header className="px-5 fixed z-header top-0 left-0 right-0 h-14 flex justify-end items-center bg-blue-600 text-white text-sm md:text-2xl font-bold">
       <div className="flex flex-row w-full justify-between text-white">
-        <div className="flex items-center">Total tasks: {appContext?.totalTasks}</div>
+        <div className="flex items-center gap-x-2">
+          <div>Total tasks: {appContext?.renderItems.length}</div>
+          <div className="hover:cursor-pointer" title="Tải xuống danh sách" onClick={handleExport}>
+            <Image className="" src={"/download.svg"} width={28} height={28} alt="download icon" />
+          </div>
+        </div>
+
         <div className="text-white flex">
           <div className="mr-2 flex gap-2 items-center">
             <Avatar className="w-6 h-6 rounded-full " />

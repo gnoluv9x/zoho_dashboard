@@ -1,8 +1,7 @@
 import React from "react";
 import ReactSelect from "react-select";
+import ValueContainer from "./ValueContainer";
 import { OptionTypes, SelectCustomProps } from "./type";
-import MultiValueContainer from "./MultiValueContainer";
-import { SelectWrapperStyled } from "./styled";
 
 const defaultStyles = {
   control: (styles: any) => ({
@@ -41,6 +40,7 @@ const SelectCustom: React.FC<SelectCustomProps> = ({
       className="select-custom-container"
       classNamePrefix="select-custom"
       onChange={handleChangeValue}
+      components={{ ValueContainer }}
       {...props}
     />
   );

@@ -8,7 +8,8 @@ export const LoaderStyled = styled.div`
   right: 0;
   bottom: 0;
   left: 0;
-  backdrop-filter: blur(2.5px);
+  /* backdrop-filter: blur(2.5px); */
+  background: #fff;
   display: flex;
   justify-content: center;
   align-items: center;

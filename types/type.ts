@@ -1,3 +1,5 @@
+import { CommonInfo, IdAndNameType } from ".";
+
 export enum CookieKey {
   ACCESS_TOKEN = "accessToken",
 }
@@ -33,6 +35,14 @@ export enum FORMATS_OF_DATE {
 }
 
 export type AppContextType = {
-  totalTasks: number;
-  setTotalTasks: (totalTasks: number) => void;
+  renderItems: TaskDetail[];
+  setRenderItems: (currentItems: TaskDetail[]) => void;
+  listSprints: any[];
+  setListSprints: (listSprints: any[]) => void;
+  listStatus: CommonInfo[];
+  setListStatus: (listStatus: CommonInfo[]) => void;
+  listMembers: IdAndNameType[];
+  setListMembers: (listMembers: IdAndNameType[]) => void;
+  listProjects: CommonInfo[];
+  setListProjects: (listProjects: CommonInfo[]) => void;
 };

@@ -81,5 +81,19 @@ export const PaginationStyled = styled.div<PaginationStyleProps>`
         }
       }
     }
+
+    // xs screen
+    @media screen and (max-width: 639.98px) {
+      font-size: 14px;
+      margin-bottom: 1rem;
+      .pagination-item {
+        padding: 0 6px;
+        min-width: 20px;
+        height: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
   }
 `;

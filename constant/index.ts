@@ -15,3 +15,5 @@ export const ALIGN_VALUE = { left: "flex-start", right: "flex-end", center: "cen
 export const DEFAULT_START_TIME = "2020-01-01";
 
 export const DEFAULT_END_TIME = "2050-01-01";
+
+export const MIN_SELECTED_VALUES = 3;

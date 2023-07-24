@@ -17,12 +17,7 @@ import { useAppContext } from "./context/App";
 export default function Home() {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const [listSprints, setListSprints] = useState<any[]>([]);
-  const [listStatus, setListStatus] = useState<CommonInfo[]>([]);
-  const [listMembers, setListMembers] = useState<IdAndNameType[]>([]);
-  const [listProjects, setListProjects] = useState<CommonInfo[]>([]);
   const [listAllItems, setListAllItems] = useState<TaskDetail[]>([]);
-  const [listRenderItems, setListRenderItems] = useState<TaskDetail[]>([]);
 
   const router = useRouter();
   const appContext = useAppContext();
@@ -30,7 +25,7 @@ export default function Home() {
   const accessToken = Cookies.get(ACCESS_TOKEN_KEY);
 
   const handleRespData = (data: FinalResponse) => {
-    setListProjects(data.projects.projects);
+    appContext?.setListProjects(data.projects.projects);
 
     // list stataus
     let listStatus: CommonInfo[] = [];
@@ -40,8 +35,8 @@ export default function Home() {
       listSprintss = listSprintss.concat(item.sprints.listing);
     });
 
-    setListStatus(listStatus);
-    setListSprints(listSprintss);
+    appContext?.setListStatus(listStatus);
+    appContext?.setListSprints(listSprintss);
 
     // list all items
     // list members
@@ -61,8 +56,8 @@ export default function Home() {
     sortFollowDate(listAllItems, "timeCreate", "desc");
 
     setListAllItems(listAllItems);
-    setListRenderItems(listAllItems);
-    setListMembers(removeDuplicate(listAllMembers, "id"));
+    appContext?.setRenderItems(listAllItems);
+    appContext?.setListMembers(removeDuplicate(listAllMembers, "id"));
   };
 
   useEffect(() => {
@@ -86,37 +81,19 @@ export default function Home() {
     }
   }, [accessToken, router]);
 
-  useEffect(() => {
-    appContext?.setTotalTasks(listRenderItems.length);
-  }, [listRenderItems, appContext]);
+  // useEffect(() => {
+  //   appContext?.setRenderItems(listRenderItems);
+  // }, [listRenderItems, appContext]);
 
-  return (
-    <main className="w-full pt-16 px-3 h-[calc(100vh-3.5rem)]">
+  return loading ? (
+    <div className="relative w-screen h-screen top-0 bottom-0  left-0 right-0 z-loading">
+      <Loader />
+    </div>
+  ) : (
+    <main className="w-full pt-16 px-3 h-screen">
       <div className="container mx-auto">
-        {loading ? (
-          <div className="relative h-[calc(100vh-56px)]">
-            <Loader />
-          </div>
-        ) : (
-          <>
-            <Filter
-              allItems={listAllItems}
-              loading={loading}
-              listStatus={listStatus}
-              listProjects={listProjects}
-              listMembers={listMembers}
-              onChangeRenderItems={setListRenderItems}
-            />
-            <TaskTable
-              listSprints={listSprints}
-              data={listRenderItems}
-              listStatus={listStatus}
-              listProjects={listProjects}
-              listMembers={listMembers}
-              loading={loading}
-            />
-          </>
-        )}
+        <Filter allItems={listAllItems} />
+        <TaskTable loading={loading} />
       </div>
     </main>
   );

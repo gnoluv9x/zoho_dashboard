@@ -1,4 +1,6 @@
 import { FORMATS_OF_DATE } from "@/types/type";
+import classNames from "classnames";
+import { twMerge } from "tailwind-merge";
 
 export const handleLogout = async () => {};
 
@@ -75,3 +77,7 @@ export const sortFollowDate = (lists: any[], fieldSort: string, order: "asc" | "
     lists.sort((a, b) => new Date(b[fieldSort]).getTime() - new Date(a[fieldSort]).getTime());
   }
 };
+
+export function cn(...inputs: classNames.ArgumentArray) {
+  return twMerge(classNames(inputs));
+}

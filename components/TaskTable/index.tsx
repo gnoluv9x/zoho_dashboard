@@ -4,17 +4,15 @@ import { TaskDetail } from "@/types/type";
 import { convertIsoStringDateToFormated, getFibonancyFromIndex } from "@/utils/helper";
 import React from "react";
 import CommonTable from "../Common/Table";
+import { useAppContext } from "@/app/context/App";
 
 interface TaskTableProps {
-  listSprints: IdAndNameType[];
-  data: TaskDetail[];
-  listStatus: CommonInfo[];
-  listProjects: CommonInfo[];
-  listMembers: IdAndNameType[];
   loading: boolean;
 }
 
-const TaskTable: React.FC<TaskTableProps> = ({ listSprints, data, listStatus, listProjects, listMembers, loading }) => {
+const TaskTable: React.FC<TaskTableProps> = ({ loading }) => {
+  const appContext = useAppContext();
+
   const columns: TableColumnCutom<TaskDetail>[] = [
     {
       fieldName: "name",
@@ -44,7 +42,7 @@ const TaskTable: React.FC<TaskTableProps> = ({ listSprints, data, listStatus, li
       align: "center",
       customCell: (info) => {
         const sprintId = info.getValue();
-        const spintItem: IdAndNameType | undefined = listSprints.find((sprint) => sprint.id === sprintId);
+        const spintItem: IdAndNameType | undefined = appContext?.listSprints.find((sprint) => sprint.id === sprintId);
         return <span>{spintItem?.name ?? ""}</span>;
       },
     },
@@ -54,7 +52,7 @@ const TaskTable: React.FC<TaskTableProps> = ({ listSprints, data, listStatus, li
       align: "center",
       customCell: (info) => {
         const statusId = info.getValue();
-        const status = listStatus.find((status) => status.id === statusId);
+        const status = appContext?.listStatus.find((status) => status.id === statusId);
         return <span>{status?.name}</span>;
       },
     },
@@ -82,7 +80,7 @@ const TaskTable: React.FC<TaskTableProps> = ({ listSprints, data, listStatus, li
       align: "center",
       customCell: (info) => {
         const value = info.getValue();
-        const project = listProjects.find((proj) => proj.id === value);
+        const project = appContext?.listProjects.find((proj) => proj.id === value);
         return <span>{project?.name}</span>;
       },
     },
@@ -95,7 +93,7 @@ const TaskTable: React.FC<TaskTableProps> = ({ listSprints, data, listStatus, li
         if (listUserWorks.length === 0) return "-";
 
         const results: string[] = [];
-        listMembers.forEach((member) => {
+        appContext?.listMembers.forEach((member) => {
           listUserWorks.forEach((userId) => {
             if (member.id === userId) {
               results.push(member.name);
@@ -107,7 +105,7 @@ const TaskTable: React.FC<TaskTableProps> = ({ listSprints, data, listStatus, li
     },
   ];
 
-  return <CommonTable columns={columns} data={data} loading={loading} />;
+  return <CommonTable columns={columns} data={appContext?.renderItems || []} loading={loading} />;
 };
 
 export default TaskTable;
