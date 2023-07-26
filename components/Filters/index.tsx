@@ -111,7 +111,7 @@ const Filter: React.FC<FilterProps> = ({ allItems }) => {
     <div className="grid grid-cols-12 gap-x-2">
       <div className="filter__startDate col-span-12 md:col-span-6 lg:col-span-4">
         <h5 className="font-bold">Date started</h5>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3 h-[36px]">
           <div>
             <DatepickerCustom
               initialValue={null}

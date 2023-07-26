@@ -4,6 +4,7 @@ import { ReactDatePickerProps } from "react-datepicker";
 import { DatePickerStyled } from "./styled";
 import "react-datepicker/dist/react-datepicker.css";
 import { FORMATS_OF_DATE } from "@/types/type";
+import { twMerge } from "tailwind-merge";
 
 interface DatepickerProps
   extends Omit<ReactDatePickerProps, "onChange" | "dateFormat" | "minDate" | "maxDate" | "value"> {
@@ -25,6 +26,7 @@ const DatepickerCustom: React.FC<DatepickerProps> = ({
   minDate,
   maxDate,
   value,
+  className,
   ...props
 }) => {
   const handleChangeDate = (date: Date | null) => {
@@ -37,7 +39,7 @@ const DatepickerCustom: React.FC<DatepickerProps> = ({
       selected={value ? getDateValue(value, FORMATS_OF_DATE["DEFAULT"]) : undefined}
       dateFormat={dateFormat}
       placeholderText={placeholder}
-      className="border-2 px-2 py-1 rounded-md w-full"
+      className={twMerge("border-[1px] border-[#cccccc] px-2 rounded-md w-full h-[38px]", className)}
       onChange={handleChangeDate}
       minDate={minDate ? getDateValue(minDate, dateFormat) : null}
       maxDate={maxDate ? getDateValue(maxDate, dateFormat) : null}

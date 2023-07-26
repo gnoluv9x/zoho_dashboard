@@ -5,4 +5,7 @@ export const DatePickerStyled = styled(DatePicker)`
   .react-datepicker__tab-loop {
     display: inline-block;
   }
+  &&&.react-datepicker-wrapper {
+    height: 36px;
+  }
 `;
