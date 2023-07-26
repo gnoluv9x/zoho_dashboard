@@ -8,8 +8,6 @@ import StyledComponentsRegistry from "@/libs/registry";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   title: "Zoho dashboard",
   description: "Dashboard UI for zoho sprints",
