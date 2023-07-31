@@ -18,7 +18,6 @@ export async function GET(req: Request) {
 
     // get teamId
     const teamIdData = await getTeams(accessToken);
-    console.log("Debug_here teamIdData: ", teamIdData);
 
     if (teamIdData?.status === "failed" && teamIdData?.code === INVALID_TOKEN_CODE)
       return authenticationFailed("Invalid token");
@@ -33,7 +32,6 @@ export async function GET(req: Request) {
 
     // get all projects
     const projectData = await getProjects(teamId, accessToken);
-    console.log("Debug_here projectData: ", projectData);
 
     if (projectData?.status === "failed" && projectData?.code === INVALID_TOKEN_CODE)
       return authenticationFailed("Invalid token");
@@ -67,7 +65,6 @@ export async function GET(req: Request) {
         ]);
       }),
     );
-    console.log("Debug_here results: ", results);
 
     if (results.length === 0) return emptyResponse("You dont own sprints");
 
@@ -134,7 +131,6 @@ export async function GET(req: Request) {
         );
       }),
     );
-    console.log("Debug_here itemsOfProjectResponse: ", itemsOfProjectResponse);
 
     // validate response status
     const itemResponse = itemsOfProjectResponse[0][0].data;
@@ -196,7 +192,6 @@ export async function GET(req: Request) {
     };
     return NextResponse.json(finalResults);
   } catch (error) {
-    console.log("Debug_here error: ", { error });
     return errorResponse();
   }
 }

@@ -64,7 +64,7 @@ export default function Auth() {
             <input className="input" type="text" placeholder="Username" name="username" />
             <input className="input" type="password" placeholder="Password" name="password" />
             <div className="text-red-500 py-2 h-5">{loginErrMessage}</div>
-            <Button type="submit" className="w-full" loading={loading}>
+            <Button type="submit" className="w-full mt-5" loading={loading}>
               LOGIN
             </Button>
           </div>
