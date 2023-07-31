@@ -4,7 +4,7 @@ export const ACCESS_TOKEN_KEY = "accessToken";
 
 export const INVALID_TOKEN_CODE = 7601;
 
-export const REVALIDATE_TIME = 5 * 60; // seconds
+export const REVALIDATE_TIME = 30; // seconds
 
 export const DEFAULT_PAGE = 1;
 
