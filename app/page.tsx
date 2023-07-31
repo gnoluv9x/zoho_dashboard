@@ -35,7 +35,7 @@ export default function Home() {
       listSprintss = listSprintss.concat(item.sprints.listing);
     });
 
-    appContext?.setListStatus(listStatus);
+    appContext?.setListStatus(removeDuplicate(listStatus, "id"));
     appContext?.setListSprints(listSprintss);
 
     // list all items
