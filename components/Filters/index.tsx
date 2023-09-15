@@ -67,6 +67,8 @@ const Filter: React.FC<FilterProps> = ({ allItems }) => {
     const createdDateEndTime = filters.createdDateRange.end
       ? getDateValue(filters.createdDateRange.end, FORMATS_OF_DATE["DEFAULT"])
       : new Date(DEFAULT_END_TIME);
+    const hasFilterStart = filters.startedDateRange.start || filters.startedDateRange.end;
+    const hasFilterCreated = filters.createdDateRange.start || filters.createdDateRange.end;
 
     const filteredItems = allItems.filter((taskItem: TaskDetail) => {
       const startedDate = taskItem.timeStart ? new Date(taskItem.timeStart) : "";
@@ -83,12 +85,18 @@ const Filter: React.FC<FilterProps> = ({ allItems }) => {
       }
 
       // check started date
-      if (startedDate && (startedDate < startedDateStartTime || startedDate > startedDateEndTime)) {
+      if (
+        (hasFilterStart && !taskItem.timeStart) ||
+        (startedDate && (startedDate < startedDateStartTime || startedDate > startedDateEndTime))
+      ) {
         return false;
       }
 
       // check created date
-      if (createdDate && (createdDate < createdDateStartTime || createdDate > createdDateEndTime)) {
+      if (
+        (hasFilterCreated && !taskItem.timeCreate) ||
+        (createdDate && (createdDate < createdDateStartTime || createdDate > createdDateEndTime))
+      ) {
         return false;
       }
 
