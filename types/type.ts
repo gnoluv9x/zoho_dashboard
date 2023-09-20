@@ -1,4 +1,4 @@
-import { CommonInfo, IdAndNameType } from ".";
+import { CommonInfo, IdAndNameType, ItemTypes } from ".";
 
 export enum CookieKey {
   ACCESS_TOKEN = "accessToken",
@@ -26,6 +26,8 @@ export type TaskDetail = {
   statusTask: string;
   priorityId: string;
   userWork: string[];
+  itemTypeid: string;
+  itemTypeTitle: string;
 };
 
 export enum FORMATS_OF_DATE {
@@ -45,4 +47,6 @@ export type AppContextType = {
   setListMembers: (listMembers: IdAndNameType[]) => void;
   listProjects: CommonInfo[];
   setListProjects: (listProjects: CommonInfo[]) => void;
+  listItemTypes: ItemTypes[];
+  setListItemTypes: (listItemTypes: ItemTypes[]) => void;
 };

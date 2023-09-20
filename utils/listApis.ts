@@ -1,5 +1,5 @@
 import { REVALIDATE_TIME } from "@/constant";
-import { ZohoItemDetail } from "@/types";
+import { ItemTypes, ZohoItemDetail } from "@/types";
 import axios from "axios";
 
 const TEAM_ID_URL = "https://sprintsapi.zoho.com/zsapi/teams/";
@@ -51,6 +51,42 @@ export async function getSprint(teamId: string, projectId: string, accessToken: 
     id: projectId,
     data,
   };
+}
+
+export async function getListItemTypes(teamId: string, projectId: string, accessToken: string): Promise<ItemTypes> {
+  const response = await fetch(
+    `https://sprintsapi.zoho.com/zsapi/team/${teamId}/projects/${projectId}/itemtype/?action=alldata`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Zoho-oauthtoken ${accessToken}`,
+      },
+      redirect: "manual",
+      next: { revalidate: REVALIDATE_TIME },
+    },
+  );
+
+  const data = await response.json();
+  const projItemTypeObjArr = Object.keys(data.projItemTypeJObj);
+  let results = {
+    id: projectId,
+    data: [],
+  };
+
+  if (projItemTypeObjArr.length > 0) {
+    const projItemTypes: any = projItemTypeObjArr.map((projItemTypeId) => {
+      const item = data.projItemTypeJObj[projItemTypeId];
+
+      return {
+        id: projItemTypeId,
+        title: item[0],
+      };
+    });
+
+    results.data = projItemTypes;
+  }
+
+  return results;
 }
 
 export async function getListStatus(teamId: string, projectId: string, accessToken: string) {

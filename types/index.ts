@@ -18,12 +18,23 @@ export type CommonInfo = {
   createdAt: string;
 };
 
+export type ItemType = {
+  id: string;
+  title: string;
+};
+
+export type ItemTypes = {
+  id: string;
+  data: ItemType[];
+};
+
 export type IdAndNameType = Omit<CommonInfo, "createdAt">;
 
 export type AllSprintData = {
   projectId: string;
   sprints: SprintResponse;
   status: CommonInfo[];
+  itemTypes: ItemTypes[];
 };
 
 export type ProjectResponse = {

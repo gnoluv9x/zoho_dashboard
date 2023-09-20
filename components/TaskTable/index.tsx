@@ -22,24 +22,24 @@ const TaskTable: React.FC<TaskTableProps> = ({ loading }) => {
     {
       fieldName: "idTaskNumber",
       heading: "Id task",
-      align: "center",
+      align: "left",
     },
     {
       fieldName: "estimate",
       heading: "Duration",
-      align: "center",
+      align: "left",
       customCell: (info) => (info.getValue() === "-1" ? "-" : info.getValue()),
     },
     {
       fieldName: "estimatePoint",
       heading: "Estimate point",
-      align: "center",
+      align: "left",
       customCell: (info) => getFibonancyFromIndex(Number(info.getValue())),
     },
     {
       fieldName: "sprintId",
       heading: "Sprint",
-      align: "center",
+      align: "left",
       customCell: (info) => {
         const sprintId = info.getValue();
         const spintItem: IdAndNameType | undefined = appContext?.listSprints.find((sprint) => sprint.id === sprintId);
@@ -49,7 +49,7 @@ const TaskTable: React.FC<TaskTableProps> = ({ loading }) => {
     {
       fieldName: "statusTask",
       heading: "Status task",
-      align: "center",
+      align: "left",
       customCell: (info) => {
         const statusId = info.getValue();
         const status = appContext?.listStatus.find((status) => status.id === statusId);
@@ -59,7 +59,7 @@ const TaskTable: React.FC<TaskTableProps> = ({ loading }) => {
     {
       fieldName: "timeCreate",
       heading: "Created date",
-      align: "center",
+      align: "left",
       customCell: (info) => {
         const date: any = info.getValue() !== "-1" ? convertIsoStringDateToFormated(info.getValue()) : "-";
         return <span>{date}</span>;
@@ -68,16 +68,22 @@ const TaskTable: React.FC<TaskTableProps> = ({ loading }) => {
     {
       fieldName: "timeStart",
       heading: "Start date",
-      align: "center",
+      align: "left",
       customCell: (info) => {
         const date: any = info.getValue() !== "-1" ? convertIsoStringDateToFormated(info.getValue()) : "-";
         return <span>{date}</span>;
       },
     },
     {
+      fieldName: "itemTypeTitle",
+      heading: "Item type",
+      align: "left",
+      customCell: (info) => <span>{info.getValue()}</span>,
+    },
+    {
       fieldName: "idProject",
       heading: "Project",
-      align: "center",
+      align: "left",
       customCell: (info) => {
         const value = info.getValue();
         const project = appContext?.listProjects.find((proj) => proj.id === value);
@@ -87,7 +93,7 @@ const TaskTable: React.FC<TaskTableProps> = ({ loading }) => {
     {
       fieldName: "userWork",
       heading: "Assigned to",
-      align: "center",
+      align: "left",
       customCell: (info) => {
         const listUserWorks: string[] = info.getValue();
         if (listUserWorks.length === 0) return "-";

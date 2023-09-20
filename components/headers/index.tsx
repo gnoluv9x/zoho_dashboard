@@ -65,6 +65,7 @@ const Header: React.FC<HeaderProps> = () => {
               "Status task": status?.name ?? "",
               "Date created": timeCreated,
               "Date started": timeStart,
+              "Item type": item.itemTypeTitle,
               Project: project?.name || "",
               "Assigned to": resultUsers.join(","),
             };
@@ -79,6 +80,7 @@ const Header: React.FC<HeaderProps> = () => {
               "Status task": null,
               "Date created": null,
               "Date started": null,
+              "Item type": null,
               Project: null,
               "Assigned to": null,
             },

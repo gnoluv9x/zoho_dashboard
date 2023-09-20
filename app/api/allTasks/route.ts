@@ -1,7 +1,16 @@
 import { ACCESS_TOKEN_KEY, INVALID_TOKEN_CODE } from "@/constant";
-import { AllSprintData, FinalResponse, IdAndNameType, ProjectResponse, ZohoItemDetail } from "@/types";
+import {
+  AllSprintData,
+  FinalResponse,
+  IdAndNameType,
+  ItemType,
+  ItemTypes,
+  ProjectResponse,
+  ZohoItemDetail,
+} from "@/types";
 import { TaskDetail } from "@/types/type";
-import { getItems, getListStatus, getProjects, getSprint, getTeams } from "@/utils/listApis";
+import { removeDuplicate } from "@/utils/helper";
+import { getItems, getListItemTypes, getListStatus, getProjects, getSprint, getTeams } from "@/utils/listApis";
 import { authenticationFailed, emptyResponse, errorResponse } from "@/utils/response";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
@@ -56,12 +65,13 @@ export async function GET(req: Request) {
       },
     };
 
-    // fetch all sprints:
+    // fetch all sprints (status, itemTypes):
     const results = await Promise.all(
       projectInfos.projects.map((project) => {
         return Promise.all([
           getSprint(teamId, project.id, accessToken),
           getListStatus(teamId, project.id, accessToken),
+          getListItemTypes(teamId, project.id, accessToken),
         ]);
       }),
     );
@@ -69,11 +79,17 @@ export async function GET(req: Request) {
     if (results.length === 0) return emptyResponse("You dont own sprints");
 
     const allSprintsOfProject: AllSprintData[] = [];
+    let listAllItemTypes: Record<ItemType["id"], ItemType["title"]> = {};
 
     results.forEach((item: any) => {
       const projectId = item[0].id;
       const sprintData = item[0].data;
       const statusData = item[1].data;
+      const itemTypesData = item[2].data;
+      itemTypesData.forEach((itemType: ItemType) => {
+        listAllItemTypes[itemType.id] = itemType.title;
+      });
+
       const userId =
         sprintData?.userDisplayName && sprintData?.userDisplayName.length !== 0
           ? Object.keys(sprintData.userDisplayName)?.[0]
@@ -108,7 +124,7 @@ export async function GET(req: Request) {
           })
         : [];
 
-      allSprintsOfProject.push({ projectId, sprints: sprintItem, status: statusItem });
+      allSprintsOfProject.push({ projectId, sprints: sprintItem, status: statusItem, itemTypes: itemTypesData });
     });
 
     const itemsOfProjectResponse = await Promise.all(
@@ -159,6 +175,9 @@ export async function GET(req: Request) {
 
         const tasks: TaskDetail[] = data?.itemJObj
           ? Object.entries<any[]>(data.itemJObj).map(([key, value]) => {
+              const itemTypeId = value[30] || "";
+              let itemTypeTitle = listAllItemTypes[itemTypeId] || "";
+
               return {
                 idTask: key,
                 idProject: item.projectId,
@@ -172,6 +191,8 @@ export async function GET(req: Request) {
                 timeCreate: value[19],
                 sprintId: value[26],
                 statusTask: value[29],
+                itemTypeId,
+                itemTypeTitle,
                 priorityId: value[31],
                 userWork: value[33],
               };

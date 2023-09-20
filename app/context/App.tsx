@@ -1,6 +1,6 @@
 "use client";
 
-import { CommonInfo, IdAndNameType } from "@/types";
+import { CommonInfo, IdAndNameType, ItemTypes } from "@/types";
 import { AppContextType, TaskDetail } from "@/types/type";
 import React, { createContext, useContext, useState } from "react";
 
@@ -16,6 +16,7 @@ export const AppContextProvider: React.FC<AppContextProviderProps> = ({ children
   const [listStatus, setListStatus] = useState<CommonInfo[]>([]);
   const [listMembers, setListMembers] = useState<IdAndNameType[]>([]);
   const [listProjects, setListProjects] = useState<CommonInfo[]>([]);
+  const [listItemTypes, setListItemTypes] = useState<ItemTypes[]>([]);
 
   return (
     <AppContext.Provider
@@ -30,6 +31,8 @@ export const AppContextProvider: React.FC<AppContextProviderProps> = ({ children
         setListMembers,
         listProjects,
         setListProjects,
+        listItemTypes,
+        setListItemTypes,
       }}
     >
       {children}

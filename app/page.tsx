@@ -4,7 +4,7 @@ import Loader from "@/components/Common/Loading";
 import Filter from "@/components/Filters";
 import TaskTable from "@/components/TaskTable";
 import { ACCESS_TOKEN_KEY } from "@/constant";
-import { CommonInfo, FinalResponse, IdAndNameType } from "@/types";
+import { AllSprintData, CommonInfo, FinalResponse, IdAndNameType, ItemTypes } from "@/types";
 import { TaskDetail } from "@/types/type";
 import axiosClient from "@/utils/api";
 import { removeDuplicate, sortFollowDate } from "@/utils/helper";
@@ -25,18 +25,23 @@ export default function Home() {
   const accessToken = Cookies.get(ACCESS_TOKEN_KEY);
 
   const handleRespData = (data: FinalResponse) => {
+    console.log("Debug_here alltask data: ", data);
     appContext?.setListProjects(data.projects.projects);
 
     // list stataus
     let listStatus: CommonInfo[] = [];
     let listSprintss: IdAndNameType[] = [];
-    data.sprints.forEach((item: any) => {
+    let listItemType: ItemTypes[] = [];
+
+    data.sprints.forEach((item: AllSprintData) => {
       listStatus = listStatus.concat(item.status);
       listSprintss = listSprintss.concat(item.sprints.listing);
+      listItemType = listItemType.concat(item.itemTypes);
     });
 
     appContext?.setListStatus(removeDuplicate(listStatus, "id"));
     appContext?.setListSprints(listSprintss);
+    appContext?.setListItemTypes(removeDuplicate(listItemType, "id"));
 
     // list all items
     // list members
