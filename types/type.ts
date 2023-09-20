@@ -26,7 +26,7 @@ export type TaskDetail = {
   statusTask: string;
   priorityId: string;
   userWork: string[];
-  itemTypeid: string;
+  itemTypeId: string;
   itemTypeTitle: string;
 };
 

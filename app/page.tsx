@@ -25,7 +25,6 @@ export default function Home() {
   const accessToken = Cookies.get(ACCESS_TOKEN_KEY);
 
   const handleRespData = (data: FinalResponse) => {
-    console.log("Debug_here alltask data: ", data);
     appContext?.setListProjects(data.projects.projects);
 
     // list stataus
@@ -78,6 +77,7 @@ export default function Home() {
       .finally(() => {
         setLoading(false);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
