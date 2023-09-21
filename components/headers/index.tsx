@@ -89,8 +89,16 @@ const Header: React.FC<HeaderProps> = () => {
     // Create a new workbook
     const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.json_to_sheet(customData);
+    const dateNow = new Date();
+    const hours = dateNow.getHours();
+    const minutes = ("0" + dateNow.getMinutes()).slice(-2);
+    const seconds = ("0" + dateNow.getSeconds()).slice(-2);
+    const days = ("0" + dateNow.getDate()).slice(-2);
+    const month = ("0" + (dateNow.getMonth() + 1)).slice(-2);
+    const year = dateNow.getFullYear();
+    const currentDate = `${hours}_${minutes}_${seconds}_${days}_${month}_${year}`;
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "DS_Tasks_" + Date.now() + ".xlsx");
+    XLSX.writeFile(workbook, "DS_Tasks_" + currentDate + ".xlsx");
   };
 
   return (

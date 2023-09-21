@@ -84,17 +84,22 @@ const Filter: React.FC<FilterProps> = ({ allItems }) => {
         return false;
       }
 
-      // check started date
+      /*
+       * check started date: return false if
+        + Có filter theo start date + task không có start date + created date của task ko nằm trong range filter start date => lọc ra những task ko điền start date nhưng có khoảng created date nằm trong khoảng thời gian lọc của start date filter
+        + Có filter theo start date + Task có start date nhưng start date nằm ngoài range đang cần filter
+      */
       if (
-        (hasFilterStart && !taskItem.timeStart) ||
-        (startedDate && (startedDate < startedDateStartTime || startedDate > startedDateEndTime))
+        hasFilterStart &&
+        ((startedDate && (startedDate < startedDateStartTime || startedDate > startedDateEndTime)) ||
+          (!startedDate && (createdDate < startedDateStartTime || createdDate > startedDateEndTime)))
       ) {
         return false;
       }
 
       // check created date
       if (
-        (hasFilterCreated && !taskItem.timeCreate) ||
+        (hasFilterCreated && !createdDate) ||
         (createdDate && (createdDate < createdDateStartTime || createdDate > createdDateEndTime))
       ) {
         return false;
