@@ -68,6 +68,7 @@ export async function getListItemTypes(teamId: string, projectId: string, access
 
   const data = await response.json();
   const projItemTypeObjArr = Object.keys(data.projItemTypeJObj);
+
   let results = {
     id: projectId,
     data: [],
@@ -79,7 +80,7 @@ export async function getListItemTypes(teamId: string, projectId: string, access
 
       return {
         id: projItemTypeId,
-        title: item[0],
+        title: item[1],
       };
     });
 
