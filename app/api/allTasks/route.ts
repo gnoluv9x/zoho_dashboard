@@ -175,7 +175,7 @@ export async function GET(req: Request) {
 
         const tasks: TaskDetail[] = data?.itemJObj
           ? Object.entries<any[]>(data.itemJObj).map(([key, value]) => {
-              const itemTypeId = value[30] || "";
+              const itemTypeId = value[31] || "";
               let itemTypeTitle = listAllItemTypes[itemTypeId] || "";
 
               return {
@@ -189,12 +189,12 @@ export async function GET(req: Request) {
                 timeEnd: value[7] === "-1" ? null : value[7],
                 estimatePoint: value[15],
                 timeCreate: value[19],
-                sprintId: value[26],
-                statusTask: value[29],
+                sprintId: value[27],
+                statusTask: value[30],
                 itemTypeId,
                 itemTypeTitle,
-                priorityId: value[31],
-                userWork: value[33],
+                // priorityId: value[31],
+                userWork: value[34],
               };
             })
           : [];

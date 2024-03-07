@@ -24,7 +24,7 @@ export type TaskDetail = {
   timeCreate: string;
   sprintId: string;
   statusTask: string;
-  priorityId: string;
+  // priorityId: string;
   userWork: string[];
   itemTypeId: string;
   itemTypeTitle: string;

@@ -107,7 +107,14 @@ const Filter: React.FC<FilterProps> = ({ allItems }) => {
 
       // check members
       if (listMemberIds.length !== 0) {
-        const userWork = taskItem.userWork.filter((userId) => listMemberIds.includes(userId));
+        let userWork: string[] = [];
+        if (Array.isArray(taskItem.userWork)) {
+          userWork = taskItem.userWork.filter((userId) => listMemberIds.includes(userId));
+        } else if (typeof taskItem.userWork === "string") {
+          if (listMemberIds.includes(taskItem.userWork)) {
+            userWork.push(taskItem.userWork);
+          }
+        }
         if (userWork.length === 0) return false;
       }
 

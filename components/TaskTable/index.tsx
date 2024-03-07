@@ -95,16 +95,22 @@ const TaskTable: React.FC<TaskTableProps> = ({ loading }) => {
       heading: "Assigned to",
       align: "left",
       customCell: (info) => {
-        const listUserWorks: string[] = info.getValue();
-        if (listUserWorks.length === 0) return "-";
+        const userWorks: string[] = info.getValue();
+        if (!userWorks || userWorks.length === 0) return "-";
 
         const results: string[] = [];
         appContext?.listMembers.forEach((member) => {
-          listUserWorks.forEach((userId) => {
-            if (member.id === userId) {
+          if (Array.isArray(userWorks)) {
+            userWorks.forEach((userId) => {
+              if (member.id === userId) {
+                results.push(member.name);
+              }
+            });
+          } else if (typeof userWorks === "string") {
+            if (member.id === userWorks) {
               results.push(member.name);
             }
-          });
+          }
         });
         return results.join(", ");
       },
