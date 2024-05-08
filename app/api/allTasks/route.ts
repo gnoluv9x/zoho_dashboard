@@ -1,15 +1,7 @@
 import { ACCESS_TOKEN_KEY, INVALID_TOKEN_CODE } from "@/constant";
-import {
-  AllSprintData,
-  FinalResponse,
-  IdAndNameType,
-  ItemType,
-  ItemTypes,
-  ProjectResponse,
-  ZohoItemDetail,
-} from "@/types";
+import { AllSprintData, FinalResponse, IdAndNameType, ItemType, ProjectResponse, ZohoItemDetail } from "@/types";
 import { TaskDetail } from "@/types/type";
-import { removeDuplicate } from "@/utils/helper";
+import { getItemProps } from "@/utils/helper";
 import { getItems, getListItemTypes, getListStatus, getProjects, getSprint, getTeams } from "@/utils/listApis";
 import { authenticationFailed, emptyResponse, errorResponse } from "@/utils/response";
 import { cookies } from "next/headers";
@@ -161,10 +153,13 @@ export async function GET(req: Request) {
       let projectId = "";
       let sprints: any = [];
 
-      projectItem.forEach((item: ZohoItemDetail) => {
-        const data = item.data;
-        const sprintId = item.sprintId;
-        if (!projectId) projectId = item.projectId;
+      projectItem.forEach((zohoItem: ZohoItemDetail, idx) => {
+        const data = zohoItem.data;
+
+        const itemProps = getItemProps(zohoItem.data?.item_prop) as Record<Partial<keyof TaskDetail>, number>;
+
+        const sprintId = zohoItem.sprintId;
+        if (!projectId) projectId = zohoItem.projectId;
 
         const members: IdAndNameType[] = data?.userDisplayName
           ? Object.entries<string>(data.userDisplayName).map(([key, value]) => ({
@@ -174,27 +169,26 @@ export async function GET(req: Request) {
           : [];
 
         const tasks: TaskDetail[] = data?.itemJObj
-          ? Object.entries<any[]>(data.itemJObj).map(([key, value]) => {
-              const itemTypeId = value[31] || "";
+          ? Object.entries<any[]>(data.itemJObj).map(([key, value], idx) => {
+              const itemTypeId = value[itemProps.itemTypeId] || "";
               let itemTypeTitle = listAllItemTypes[itemTypeId] || "";
 
               return {
                 idTask: key,
-                idProject: item.projectId,
-                name: value[0],
-                taskDetail: value[1],
-                idTaskNumber: value[2],
-                estimate: value[4],
-                timeStart: value[6] === "-1" ? null : value[6],
-                timeEnd: value[7] === "-1" ? null : value[7],
-                estimatePoint: value[15],
-                timeCreate: value[19],
-                sprintId: value[27],
-                statusTask: value[30],
+                idProject: zohoItem.projectId,
+                name: value[itemProps.name],
+                taskDetail: value[itemProps.taskDetail],
+                idTaskNumber: value[itemProps.idTaskNumber], // id: 573, 574....
+                estimate: value[itemProps.estimate], // khoảng thời gian estimate
+                timeStart: value[itemProps.timeStart] === "-1" ? null : value[itemProps.timeStart], // Ngày bắt đầu task
+                timeEnd: value[itemProps.timeEnd] === "-1" ? null : value[itemProps.timeEnd], // Ngày kết thúc task
+                estimatePoint: value[itemProps.estimatePoint], // Index của point trong dãy fibonanci
+                timeCreate: value[itemProps.timeCreate], // Ngày tạo task
+                sprintId: value[itemProps.sprintId], // Id của sprint
+                statusTask: value[itemProps.statusTask], // Id trạng thái task:
                 itemTypeId,
                 itemTypeTitle,
-                // priorityId: value[31],
-                userWork: value[34],
+                userWork: value[itemProps.userWork], // Người làm
               };
             })
           : [];
@@ -213,6 +207,7 @@ export async function GET(req: Request) {
     };
     return NextResponse.json(finalResults);
   } catch (error) {
+    console.log("Debug_here error: ", error);
     return errorResponse();
   }
 }

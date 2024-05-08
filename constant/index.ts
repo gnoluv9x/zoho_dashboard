@@ -17,3 +17,43 @@ export const DEFAULT_START_TIME = "2020-01-01";
 export const DEFAULT_END_TIME = "2050-01-01";
 
 export const MIN_SELECTED_VALUES = 3;
+
+// Danh sách tên thuộc tính lấy từ ZOHO_API của task và tên thuộc tính của Response tương ứng
+export const ITEM_PROPS_NAME: Record<string, string> = {
+  endDate: "timeEnd",
+  releaseCount: "",
+  description: "taskDetail",
+  isNotesAdded: "",
+  itemNo: "idTaskNumber",
+  ownerId: "userWork",
+  addedVia: "",
+  hasCheckList: "",
+  leftPosition: "",
+  duration: "estimate",
+  itemEpicSeq: "",
+  itemName: "name",
+  startAfter: "",
+  descriptionBlockId: "",
+  createdTime: "timeCreate",
+  isIntegrated: "",
+  rightPosition: "",
+  rootItem: "",
+  isDocsAdded: "",
+  projPriorityId: "",
+  isParent: "",
+  userGroupCount: "",
+  completedDate: "",
+  sequence: "",
+  sprintId: "sprintId",
+  depth: "",
+  points: "estimatePoint",
+  itemStatusSeq: "",
+  statusId: "statusTask",
+  epicId: "",
+  createdBy: "",
+  parentItem: "",
+  tagCount: "",
+  projItemTypeId: "itemTypeId",
+  startDate: "timeStart",
+  completedBy: "",
+};

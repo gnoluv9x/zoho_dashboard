@@ -1,4 +1,5 @@
-import { FORMATS_OF_DATE } from "@/types/type";
+import { ITEM_PROPS_NAME } from "@/constant";
+import { FORMATS_OF_DATE, TaskDetail } from "@/types/type";
 import classNames from "classnames";
 import { twMerge } from "tailwind-merge";
 
@@ -80,4 +81,20 @@ export const sortFollowDate = (lists: any[], fieldSort: string, order: "asc" | "
 
 export function cn(...inputs: classNames.ArgumentArray) {
   return twMerge(classNames(inputs));
+}
+
+export function getItemProps(itemProps: Record<string, number>): Record<Partial<keyof TaskDetail>, number> | {} {
+  if (!itemProps || Object.keys(itemProps).length === 0) return {};
+
+  const result = Object.keys(itemProps).reduce((acc, apiKey) => {
+    const responseName = ITEM_PROPS_NAME[apiKey];
+
+    if (responseName) {
+      acc[responseName as keyof TaskDetail] = itemProps[apiKey];
+    }
+
+    return acc;
+  }, {} as Record<Partial<keyof TaskDetail>, number>);
+
+  return result;
 }
