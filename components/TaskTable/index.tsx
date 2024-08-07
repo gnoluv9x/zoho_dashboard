@@ -31,6 +31,12 @@ const TaskTable: React.FC<TaskTableProps> = ({ loading }) => {
       customCell: (info) => (info.getValue() === "-1" ? "-" : info.getValue()),
     },
     {
+      fieldName: "estimateTime",
+      heading: "Estimate time (h)",
+      align: "left",
+      customCell: (info) => (info.getValue() === "-1" ? 0 : info.getValue()),
+    },
+    {
       fieldName: "estimatePoint",
       heading: "Estimate point",
       align: "left",

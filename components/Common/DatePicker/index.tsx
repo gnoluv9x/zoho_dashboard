@@ -10,7 +10,6 @@ interface DatepickerProps
   extends Omit<ReactDatePickerProps, "onChange" | "dateFormat" | "minDate" | "maxDate" | "value"> {
   dateFormat?: FORMATS_OF_DATE;
   placeholder?: string;
-  initialValue?: Date | null;
   onDateChange: (value: string | null) => void;
   minDate?: string | null;
   maxDate?: string | null;
@@ -21,7 +20,6 @@ interface DatepickerProps
 const DatepickerCustom: React.FC<DatepickerProps> = ({
   dateFormat = FORMATS_OF_DATE["DEFAULT"],
   placeholder = "Vui lòng chọn ngày",
-  initialValue,
   onDateChange,
   minDate,
   maxDate,
@@ -36,7 +34,7 @@ const DatepickerCustom: React.FC<DatepickerProps> = ({
 
   return (
     <DatePickerStyled
-      selected={value ? getDateValue(value, FORMATS_OF_DATE["DEFAULT"]) : undefined}
+      selected={value ? getDateValue(value, dateFormat) : undefined}
       dateFormat={dateFormat}
       placeholderText={placeholder}
       className={twMerge("border-[1px] border-[#cccccc] px-2 rounded-md w-full h-[38px]", className)}

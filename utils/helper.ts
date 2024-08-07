@@ -1,4 +1,5 @@
 import { ITEM_PROPS_NAME } from "@/constant";
+import { SprintDataType } from "@/types";
 import { FORMATS_OF_DATE, TaskDetail } from "@/types/type";
 import classNames from "classnames";
 import { twMerge } from "tailwind-merge";
@@ -52,11 +53,16 @@ export const getDateValue = (dateString: string, formated: FORMATS_OF_DATE): Dat
   const monthIndex = formatDateArray.indexOf("MM");
   const yearIndex = formatDateArray.indexOf("yyyy");
 
-  const result = new Date(
-    parseInt(datesArray[yearIndex]),
-    parseInt(datesArray[monthIndex]) - 1,
-    parseInt(datesArray[dateIndex]),
-  );
+  let year = yearIndex !== -1 ? parseInt(datesArray[yearIndex]) : new Date().getFullYear();
+  let month = monthIndex !== -1 ? parseInt(datesArray[monthIndex]) - 1 : 0;
+  let day = dateIndex !== -1 ? parseInt(datesArray[dateIndex]) : 1;
+
+  // Nếu chỉ có tháng và năm (MM/yyyy), đặt ngày là 1
+  if (formatDateArray.length === 2 && monthIndex !== -1 && yearIndex !== -1) {
+    day = 1;
+  }
+
+  const result = new Date(year, month, day);
 
   return result;
 };
@@ -97,4 +103,51 @@ export function getItemProps(itemProps: Record<string, number>): Record<Partial<
   }, {} as Record<Partial<keyof TaskDetail>, number>);
 
   return result;
+}
+
+export function getMonthFromSprintName(sprintName: string): string {
+  const pattern = /\(([A-Za-z])(\d+)_(\d+)\)/;
+
+  const match = sprintName.match(pattern);
+
+  if (match) {
+    const [, , month, year] = match;
+    const fullYear = year.length === 2 ? "20" + year : year;
+    return `${month.padStart(2, "0")}/${fullYear}`;
+  }
+
+  return "";
+}
+
+// hàm kiểm tra xem task có nằm trong sprint có bộ lọc theo tháng không? Sprint này sẽ có tên format dạng: Sprint 20 (T08/2024)
+export function checkTaskItemInSprintWithMonth(
+  list: SprintDataType[],
+  taskItem: TaskDetail,
+  filterMonth: string,
+): boolean {
+  const listSprintsHasMonth = list.reduce<string[]>((result, sprint) => {
+    if (sprint.month && filterMonth === sprint.month) {
+      result.push(sprint.id);
+    }
+
+    return result;
+  }, []);
+
+  return listSprintsHasMonth?.includes(taskItem.sprintId);
+}
+
+// hàm này convert ngày giờ phút sang số giờ, ví dụ: 1d2h => 18h
+export function convertTimeToHours(timeString: string): number {
+  const regex = /(\d+d)?\s*(\d+h)?\s*(\d+m)?/;
+  const match = timeString.trim().match(regex);
+
+  if (!match) return 0;
+
+  const days = parseInt(match[1]) || 0;
+  const hours = parseInt(match[2]) || 0;
+  const minutes = parseInt(match[3]) || 0;
+
+  const totalHours = days * 8 + hours + minutes / 60;
+
+  return Math.round(totalHours * 100) / 100;
 }

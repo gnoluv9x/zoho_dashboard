@@ -7,12 +7,13 @@ import { ACCESS_TOKEN_KEY } from "@/constant";
 import { AllSprintData, CommonInfo, FinalResponse, IdAndNameType, ItemTypes } from "@/types";
 import { TaskDetail } from "@/types/type";
 import axiosClient from "@/utils/api";
-import { removeDuplicate, sortFollowDate } from "@/utils/helper";
+import { checkTaskItemInSprintWithMonth, removeDuplicate, sortFollowDate } from "@/utils/helper";
 import { AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAppContext } from "./context/App";
+import dayjs from "dayjs";
 
 export default function Home() {
   const [loading, setLoading] = useState<boolean>(false);
@@ -29,17 +30,17 @@ export default function Home() {
 
     // list stataus
     let listStatus: CommonInfo[] = [];
-    let listSprintss: IdAndNameType[] = [];
+    let listSprints: IdAndNameType[] = [];
     let listItemType: ItemTypes[] = [];
 
     data.sprints.forEach((item: AllSprintData) => {
       listStatus = listStatus.concat(item.status);
-      listSprintss = listSprintss.concat(item.sprints.listing);
+      listSprints = listSprints.concat(item.sprints.listing);
       listItemType = listItemType.concat(item.itemTypes);
     });
 
     appContext?.setListStatus(removeDuplicate(listStatus, "id"));
-    appContext?.setListSprints(listSprintss);
+    appContext?.setListSprints(listSprints);
     appContext?.setListItemTypes(removeDuplicate(listItemType, "id"));
 
     // list all items
@@ -60,7 +61,13 @@ export default function Home() {
     sortFollowDate(listAllItems, "timeCreate", "desc");
 
     setListAllItems(listAllItems);
-    appContext?.setRenderItems(listAllItems);
+
+    // lấy các items trong tháng hiện tại: do bộ lọc để mặc định tháng hiện tại khi render lần đầu
+    const currentMonthYear = dayjs().format("MM/YYYY");
+    appContext?.setRenderItems(
+      listAllItems.filter((item) => checkTaskItemInSprintWithMonth(listSprints, item, currentMonthYear)),
+    );
+
     appContext?.setListMembers(removeDuplicate(listAllMembers, "id"));
   };
 

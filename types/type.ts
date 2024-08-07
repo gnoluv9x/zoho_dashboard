@@ -1,4 +1,4 @@
-import { CommonInfo, IdAndNameType, ItemTypes } from ".";
+import { CommonInfo, IdAndNameType, ItemTypes, SprintDataType } from ".";
 
 export enum CookieKey {
   ACCESS_TOKEN = "accessToken",
@@ -21,6 +21,7 @@ export type TaskDetail = {
   timeStart: string;
   timeEnd: string;
   estimatePoint: string;
+  estimateTime: number;
   timeCreate: string;
   sprintId: string;
   statusTask: string;
@@ -34,13 +35,14 @@ export enum FORMATS_OF_DATE {
   DEFAULT = "dd/MM/yyyy",
   MONTH_FIRST = "MM/dd/yyyy",
   YEAR_FIRST = "yyyy/MM/dd",
+  ONLY_MONTH_YEAR = "MM/yyyy",
 }
 
 export type AppContextType = {
   renderItems: TaskDetail[];
   setRenderItems: (currentItems: TaskDetail[]) => void;
-  listSprints: any[];
-  setListSprints: (listSprints: any[]) => void;
+  listSprints: SprintDataType[];
+  setListSprints: (listSprints: SprintDataType[]) => void;
   listStatus: CommonInfo[];
   setListStatus: (listStatus: CommonInfo[]) => void;
   listMembers: IdAndNameType[];

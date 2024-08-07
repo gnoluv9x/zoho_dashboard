@@ -60,6 +60,7 @@ const Header: React.FC<HeaderProps> = () => {
               "Name task": item?.name,
               "Id task": item?.idTaskNumber,
               Duration: item?.estimate === "-1" ? "" : item?.estimate,
+              "Estimate time": item?.estimateTime,
               "Estimate point": getFibonancyFromIndex(Number(item.estimatePoint)),
               "Id sprint": spintItem?.name ?? "",
               "Status task": status?.name ?? "",

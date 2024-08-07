@@ -1,5 +1,3 @@
-import { TaskDetail } from "./type";
-
 export interface ILoginBody {
   username: string;
   password: string;
@@ -29,6 +27,7 @@ export type ItemTypes = {
 };
 
 export type IdAndNameType = Omit<CommonInfo, "createdAt">;
+export type SprintDataType = IdAndNameType & { month?: string | null };
 
 export type AllSprintData = {
   projectId: string;
@@ -46,7 +45,7 @@ export type ProjectResponse = {
 };
 
 export type SprintResponse = {
-  listing: IdAndNameType[];
+  listing: SprintDataType[];
   owner: IdAndNameType;
 };
 

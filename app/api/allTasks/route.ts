@@ -1,7 +1,7 @@
 import { ACCESS_TOKEN_KEY, INVALID_TOKEN_CODE } from "@/constant";
 import { AllSprintData, FinalResponse, IdAndNameType, ItemType, ProjectResponse, ZohoItemDetail } from "@/types";
 import { TaskDetail } from "@/types/type";
-import { getItemProps } from "@/utils/helper";
+import { convertTimeToHours, getItemProps, getMonthFromSprintName } from "@/utils/helper";
 import { getItems, getListItemTypes, getListStatus, getProjects, getSprint, getTeams } from "@/utils/listApis";
 import { authenticationFailed, emptyResponse, errorResponse } from "@/utils/response";
 import { cookies } from "next/headers";
@@ -9,7 +9,7 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
     // check authen
     const cookieStore = cookies();
@@ -91,9 +91,11 @@ export async function GET(req: Request) {
         listing: sprintData?.sprintJObj
           ? Object.keys(sprintData.sprintJObj || {}).reduce((acc, currentKey) => {
               const data = sprintData.sprintJObj[currentKey];
+              const month = getMonthFromSprintName(data[0]);
               const value = {
                 id: currentKey,
                 name: data[0],
+                month,
               };
               acc.push(value as never);
               return acc;
@@ -153,7 +155,7 @@ export async function GET(req: Request) {
       let projectId = "";
       let sprints: any = [];
 
-      projectItem.forEach((zohoItem: ZohoItemDetail, idx) => {
+      projectItem.forEach((zohoItem: ZohoItemDetail) => {
         const data = zohoItem.data;
 
         const itemProps = getItemProps(zohoItem.data?.item_prop) as Record<Partial<keyof TaskDetail>, number>;
@@ -169,9 +171,11 @@ export async function GET(req: Request) {
           : [];
 
         const tasks: TaskDetail[] = data?.itemJObj
-          ? Object.entries<any[]>(data.itemJObj).map(([key, value], idx) => {
+          ? Object.entries<any[]>(data.itemJObj).map(([key, value]) => {
               const itemTypeId = value[itemProps.itemTypeId] || "";
               let itemTypeTitle = listAllItemTypes[itemTypeId] || "";
+              const estimate = value[itemProps.estimate];
+              const estimateTime = convertTimeToHours(estimate);
 
               return {
                 idTask: key,
@@ -179,10 +183,11 @@ export async function GET(req: Request) {
                 name: value[itemProps.name],
                 taskDetail: value[itemProps.taskDetail],
                 idTaskNumber: value[itemProps.idTaskNumber], // id: 573, 574....
-                estimate: value[itemProps.estimate], // khoảng thời gian estimate
+                estimate, // khoảng thời gian (duration) estimate
+                estimateTime, // khoảng thời gian (duration) estimate tính theo giờ
+                estimatePoint: value[itemProps.estimatePoint], // Index của point trong dãy fibonanci
                 timeStart: value[itemProps.timeStart] === "-1" ? null : value[itemProps.timeStart], // Ngày bắt đầu task
                 timeEnd: value[itemProps.timeEnd] === "-1" ? null : value[itemProps.timeEnd], // Ngày kết thúc task
-                estimatePoint: value[itemProps.estimatePoint], // Index của point trong dãy fibonanci
                 timeCreate: value[itemProps.timeCreate], // Ngày tạo task
                 sprintId: value[itemProps.sprintId], // Id của sprint
                 statusTask: value[itemProps.statusTask], // Id trạng thái task:

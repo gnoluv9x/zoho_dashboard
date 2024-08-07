@@ -1,6 +1,6 @@
 "use client";
 
-import { CommonInfo, IdAndNameType, ItemTypes } from "@/types";
+import { CommonInfo, IdAndNameType, ItemTypes, SprintDataType } from "@/types";
 import { AppContextType, TaskDetail } from "@/types/type";
 import React, { createContext, useContext, useState } from "react";
 
@@ -11,12 +11,12 @@ type AppContextProviderProps = {
 const AppContext = createContext<AppContextType | null>(null);
 
 export const AppContextProvider: React.FC<AppContextProviderProps> = ({ children }) => {
-  const [renderItems, setRenderItems] = useState<TaskDetail[]>([]);
-  const [listSprints, setListSprints] = useState<any[]>([]);
+  const [renderItems, setRenderItems] = useState<TaskDetail[]>([]); // list task
+  const [listSprints, setListSprints] = useState<SprintDataType[]>([]); //
   const [listStatus, setListStatus] = useState<CommonInfo[]>([]);
   const [listMembers, setListMembers] = useState<IdAndNameType[]>([]);
   const [listProjects, setListProjects] = useState<CommonInfo[]>([]);
-  const [listItemTypes, setListItemTypes] = useState<ItemTypes[]>([]);
+  const [listItemTypes, setListItemTypes] = useState<ItemTypes[]>([]); // danh sách các trạng thái task
 
   return (
     <AppContext.Provider

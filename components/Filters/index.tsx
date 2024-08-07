@@ -1,11 +1,12 @@
 import { useAppContext } from "@/app/context/App";
 import { DEFAULT_END_TIME, DEFAULT_START_TIME } from "@/constant";
 import { FORMATS_OF_DATE, Option, TaskDetail } from "@/types/type";
-import { getDateValue, sortFollowDate } from "@/utils/helper";
+import { checkTaskItemInSprintWithMonth, getDateValue, sortFollowDate } from "@/utils/helper";
 import React, { useState } from "react";
 import DatepickerCustom from "../Common/DatePicker";
 import SelectCustom from "../Common/SelectCustom";
 import { OptionTypes } from "../Common/SelectCustom/type";
+import dayjs from "dayjs";
 
 interface FilterProps {
   allItems: TaskDetail[];
@@ -17,6 +18,7 @@ type FiltersType = {
   status: Option<string> | null;
   members: Option<string>[];
   project: Option<string> | null;
+  monthYear: string | null;
 };
 
 export const defaultFilters: FiltersType = {
@@ -25,6 +27,7 @@ export const defaultFilters: FiltersType = {
   status: null,
   members: [],
   project: null,
+  monthYear: dayjs().format("MM/YYYY"),
 };
 
 const Filter: React.FC<FilterProps> = ({ allItems }) => {
@@ -48,7 +51,7 @@ const Filter: React.FC<FilterProps> = ({ allItems }) => {
   };
 
   const handleClearFilter = () => {
-    setFilters(defaultFilters);
+    setFilters({ ...defaultFilters, monthYear: "" });
     appContext?.setRenderItems(allItems);
   };
 
@@ -74,12 +77,17 @@ const Filter: React.FC<FilterProps> = ({ allItems }) => {
       const startedDate = taskItem.timeStart ? new Date(taskItem.timeStart) : "";
       const createdDate = taskItem.timeCreate ? new Date(taskItem.timeCreate) : "";
 
-      // check status
+      // Lọc task theo tháng
+      if (filters.monthYear) {
+        return checkTaskItemInSprintWithMonth(appContext?.listSprints || [], taskItem, filters.monthYear);
+      }
+
+      // Lọc task theo trạng thái
       if (filters.status?.value && taskItem.statusTask !== filters.status.value) {
         return false;
       }
 
-      // check project
+      // Lọc task theo project
       if (filters.project?.value && taskItem.idProject !== filters.project.value) {
         return false;
       }
@@ -97,7 +105,7 @@ const Filter: React.FC<FilterProps> = ({ allItems }) => {
         return false;
       }
 
-      // check created date
+      // // Lọc task theo created date
       if (
         (hasFilterCreated && !createdDate) ||
         (createdDate && (createdDate < createdDateStartTime || createdDate > createdDateEndTime))
@@ -105,7 +113,7 @@ const Filter: React.FC<FilterProps> = ({ allItems }) => {
         return false;
       }
 
-      // check members
+      // // Lọc task theo members
       if (listMemberIds.length !== 0) {
         let userWork: string[] = [];
         if (Array.isArray(taskItem.userWork)) {
@@ -127,6 +135,10 @@ const Filter: React.FC<FilterProps> = ({ allItems }) => {
     appContext?.setRenderItems(filteredItems);
   };
 
+  const handleChangeMonth = (value: any) => {
+    setFilters((prevFilters) => ({ ...prevFilters, monthYear: value }));
+  };
+
   return (
     <div className="grid grid-cols-12 gap-x-2">
       <div className="filter__startDate col-span-12 md:col-span-6 lg:col-span-4">
@@ -134,7 +146,6 @@ const Filter: React.FC<FilterProps> = ({ allItems }) => {
         <div className="grid grid-cols-2 gap-3 h-[36px]">
           <div>
             <DatepickerCustom
-              initialValue={null}
               placeholder="Ngày bắt đầu"
               value={filters.startedDateRange.start}
               isClearable
@@ -144,7 +155,6 @@ const Filter: React.FC<FilterProps> = ({ allItems }) => {
           </div>
           <div>
             <DatepickerCustom
-              initialValue={null}
               placeholder="Ngày kết thúc"
               value={filters.startedDateRange.end}
               isClearable
@@ -159,7 +169,6 @@ const Filter: React.FC<FilterProps> = ({ allItems }) => {
         <div className="grid grid-cols-2 gap-3">
           <div className="">
             <DatepickerCustom
-              initialValue={null}
               placeholder="Ngày bắt đầu"
               isClearable
               value={filters.createdDateRange.start}
@@ -169,7 +178,6 @@ const Filter: React.FC<FilterProps> = ({ allItems }) => {
           </div>
           <div className="">
             <DatepickerCustom
-              initialValue={null}
               placeholder="Ngày kết thúc"
               value={filters.createdDateRange.end}
               isClearable
@@ -209,6 +217,18 @@ const Filter: React.FC<FilterProps> = ({ allItems }) => {
           }
           isMulti
           closeMenuOnSelect={false}
+        />
+      </div>
+      <div className="filter_month col-span-4 md:col-span-8 lg:col-span-2">
+        <h5 className="font-bold">Tháng</h5>
+        <DatepickerCustom
+          placeholder="Lọc theo tháng"
+          value={filters.monthYear}
+          dateFormat={FORMATS_OF_DATE.ONLY_MONTH_YEAR}
+          isClearable
+          onDateChange={handleChangeMonth}
+          showMonthYearPicker
+          showFullMonthYearPicker
         />
       </div>
       <div className="mt-2 md:mt-0 flex justify-start md:justify-end xl:justify-start items-end gap-x-2 col-span-12 md:col-span-4 lg:col-span-2">
