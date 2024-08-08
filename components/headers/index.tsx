@@ -21,6 +21,7 @@ import dayjs from "dayjs";
 import Cookies from "js-cookie";
 import { ChartColumnBig, ListTodo } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import * as XLSX from "xlsx";
@@ -131,7 +132,8 @@ const Header: React.FC<HeaderProps> = () => {
     const nonDuplicateListStatus = removeDuplicate(listStatus, "id");
     appContext?.setListStatus(nonDuplicateListStatus);
     appContext?.setListSprints(listSprints);
-    appContext?.setListItemTypes(removeDuplicate(listItemType, "id"));
+    const listNoDuplicateItemTypes = removeDuplicate(listItemType, "id");
+    appContext?.setListItemTypes(listNoDuplicateItemTypes);
 
     // list all items
     const listAllItems: TaskDetail[] = [];
@@ -193,37 +195,32 @@ const Header: React.FC<HeaderProps> = () => {
         </div>
 
         <div className="flex flex-1 items-center justify-center gap-[2px] lg:gap-2">
-          <Button
-            variant="link"
-            className={cn("group text-gray-400 hover:text-white hover:no-underline", [
-              pathname === "/" ? "font-medium text-white" : "",
-            ])}
-            onClick={() => router.push("/")}
-          >
+          <Link href="/" className="group flex items-center gap-x-1 text-gray-400 hover:text-white hover:no-underline">
             <ListTodo
-              className={cn("mr-0 text-sm text-gray-400 hover:text-white group-hover:text-white lg:mr-1", [
+              className={cn(
+                "mr-0 text-sm text-gray-400 hover:text-white group-hover:text-white lg:mr-1",
                 pathname === "/" ? "text-white" : "",
-              ])}
+              )}
               size={20}
             />
-            <span className="hidden text-lg lg:inline">Task list</span>
-          </Button>
+            <span className={cn(["hidden text-lg lg:inline", pathname === "/" ? "text-white" : ""])}>Task list</span>
+          </Link>
           <span className="my-auto">|</span>
-          <Button
-            variant="link"
-            className={cn("group text-gray-400 hover:text-white hover:no-underline", [
-              pathname === "/member-performance" ? "text-white" : "",
-            ])}
-            onClick={() => router.push("/member-performance")}
+          <Link
+            href="/member-performance"
+            className="group flex items-center gap-x-1 text-gray-400 hover:text-white hover:no-underline"
           >
             <ChartColumnBig
               size={20}
-              className={cn("mr-0 text-sm text-gray-400 group-hover:text-white lg:mr-1", [
+              className={cn(
+                "mr-0 text-sm text-gray-400 group-hover:text-white lg:mr-1",
                 pathname === "/member-performance" ? "text-white" : "",
-              ])}
+              )}
             />
-            <span className="hidden text-lg lg:inline">Member performance</span>
-          </Button>
+            <span className={cn("hidden text-lg lg:inline", pathname === "/member-performance" ? "text-white" : "")}>
+              Member performance
+            </span>
+          </Link>
         </div>
 
         <div className="flex text-white">

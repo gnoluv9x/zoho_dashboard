@@ -1,5 +1,5 @@
 import { APP_PRECISION, ITEM_PROPS_NAME } from "@/constant";
-import { CommonInfo, IdAndNameType, SprintDataType } from "@/types";
+import { CommonInfo, IdAndNameType, ItemTypes, SprintDataType } from "@/types";
 import { ChartDataItemType, FORMATS_OF_DATE, TaskDetail } from "@/types/type";
 import classNames from "classnames";
 import { twMerge } from "tailwind-merge";
@@ -183,8 +183,8 @@ export function getChartDataFromItems(
   const results: Record<string, ChartDataItemType[]> = {};
   listSprintsHasMonth.forEach((sprint) => {
     listItems.forEach((task) => {
-      if (task.sprintId === sprint.id) {
-        // Chỉ kiểm tra các task có sprint title có dạng:  Sprint 2 (T8_24)
+      if (task.sprintId === sprint.id && !task.itemTypeTitle.toLowerCase().includes("bug")) {
+        // Chỉ lấy các task có sprint title có dạng:  Sprint 2 (T8_24) và không phải bug
         const currentMonth = sprint.month; // Ví dụ: 08/2024
         const listChartData: ChartDataItemType[] = results?.[currentMonth] || [];
 
