@@ -25,7 +25,6 @@ export type TaskDetail = {
   timeCreate: string;
   sprintId: string;
   statusTask: string;
-  // priorityId: string;
   userWork: string[];
   itemTypeId: string;
   itemTypeTitle: string;
@@ -51,4 +50,28 @@ export type AppContextType = {
   setListProjects: (listProjects: CommonInfo[]) => void;
   listItemTypes: ItemTypes[];
   setListItemTypes: (listItemTypes: ItemTypes[]) => void;
+  chartData: Record<string, ChartDataItemType[]>;
+  setChartData: (items: Record<string, ChartDataItemType[]>) => void;
+  listAllItems: TaskDetail[];
+  setListAllItems: (items: TaskDetail[]) => void;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
+};
+
+export type ChartDataItemType = {
+  incompleteTime: number;
+  completeTime: number;
+  estimateTime?: number;
+  memberId: string;
+  memberName: string;
+  memberPercent?: string;
+};
+
+export type FiltersType = {
+  startedDateRange: { start: string; end: string };
+  createdDateRange: { start: string; end: string };
+  status: Option<string> | null;
+  members: Option<string>[];
+  project: Option<string> | null;
+  monthYear: string | null;
 };

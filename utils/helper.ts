@@ -1,6 +1,6 @@
-import { ITEM_PROPS_NAME } from "@/constant";
-import { SprintDataType } from "@/types";
-import { FORMATS_OF_DATE, TaskDetail } from "@/types/type";
+import { APP_PRECISION, ITEM_PROPS_NAME } from "@/constant";
+import { CommonInfo, IdAndNameType, SprintDataType } from "@/types";
+import { ChartDataItemType, FORMATS_OF_DATE, TaskDetail } from "@/types/type";
 import classNames from "classnames";
 import { twMerge } from "tailwind-merge";
 
@@ -92,28 +92,37 @@ export function cn(...inputs: classNames.ArgumentArray) {
 export function getItemProps(itemProps: Record<string, number>): Record<Partial<keyof TaskDetail>, number> | {} {
   if (!itemProps || Object.keys(itemProps).length === 0) return {};
 
-  const result = Object.keys(itemProps).reduce((acc, apiKey) => {
-    const responseName = ITEM_PROPS_NAME[apiKey];
+  const result = Object.keys(itemProps).reduce(
+    (acc, apiKey) => {
+      const responseName = ITEM_PROPS_NAME[apiKey];
 
-    if (responseName) {
-      acc[responseName as keyof TaskDetail] = itemProps[apiKey];
-    }
+      if (responseName) {
+        acc[responseName as keyof TaskDetail] = itemProps[apiKey];
+      }
 
-    return acc;
-  }, {} as Record<Partial<keyof TaskDetail>, number>);
+      return acc;
+    },
+    {} as Record<Partial<keyof TaskDetail>, number>,
+  );
 
   return result;
 }
 
 export function getMonthFromSprintName(sprintName: string): string {
-  const pattern = /\(([A-Za-z])(\d+)_(\d+)\)/;
+  const pattern = /\((?:[A-Za-z])?(\d+)[-/_](\d+)\)/;
 
   const match = sprintName.match(pattern);
 
   if (match) {
-    const [, , month, year] = match;
+    const [, month, year] = match;
+    let newMonth = parseInt(month, 10);
+
+    // Đảm bảo month trong khoảng 1-12
+    newMonth = ((newMonth - 1) % 12) + 1;
+
     const fullYear = year.length === 2 ? "20" + year : year;
-    return `${month.padStart(2, "0")}/${fullYear}`;
+
+    return `${newMonth.toString().padStart(2, "0")}/${fullYear}`;
   }
 
   return "";
@@ -149,5 +158,99 @@ export function convertTimeToHours(timeString: string): number {
 
   const totalHours = days * 8 + hours + minutes / 60;
 
-  return Math.round(totalHours * 100) / 100;
+  return Math.round(totalHours * APP_PRECISION) / APP_PRECISION;
+}
+
+// hàm lấy thông tin chart
+export function getChartDataFromItems(
+  listItems: TaskDetail[],
+  listSprints: SprintDataType[],
+  listStatus: CommonInfo[],
+  listMembers: IdAndNameType[],
+): Record<string, ChartDataItemType[]> {
+  if (listItems.length === 0) return {};
+
+  const listSprintsHasMonth = listSprints.filter((sprint) => sprint.month);
+
+  const listDoneTaskStatus: string[] = []; // Danh sách các trạng thái task đã done
+
+  listStatus.forEach((status) => {
+    if (status.name.toLowerCase().includes("done")) {
+      listDoneTaskStatus.push(status.id);
+    }
+  });
+
+  const results: Record<string, ChartDataItemType[]> = {};
+  listSprintsHasMonth.forEach((sprint) => {
+    listItems.forEach((task) => {
+      if (task.sprintId === sprint.id) {
+        // Chỉ kiểm tra các task có sprint title có dạng:  Sprint 2 (T8_24)
+        const currentMonth = sprint.month; // Ví dụ: 08/2024
+        const listChartData: ChartDataItemType[] = results?.[currentMonth] || [];
+
+        task.userWork.forEach((userId) => {
+          const currentUserIdx = listChartData.findIndex((chartData) => chartData.memberId === userId);
+
+          if (currentUserIdx !== -1) {
+            /*
+             * nếu đã có user trong list data của tháng hiện tại
+             ** cộng dồn compeleteTime hoặc incompeleteTime với duration hiện tại dựa trên status của task hiện tại (đã done hay chưa)
+             */
+
+            const currentUser = listChartData[currentUserIdx];
+            const currentUserEstimateTime = task.estimateTime;
+
+            if (listDoneTaskStatus.includes(task.statusTask)) {
+              // trường hợp task đã done => tăng compeleteTime
+              const completeTime = fixPlusFloatingPointError([currentUser.completeTime, currentUserEstimateTime]);
+              const newUser: ChartDataItemType = { ...currentUser, completeTime };
+
+              listChartData.splice(currentUserIdx, 1, newUser);
+            } else {
+              // trường hợp task chưa done => tăng incompeleteTime
+              const incompleteTime = fixPlusFloatingPointError([currentUser.incompleteTime, currentUserEstimateTime]);
+
+              const newUser: ChartDataItemType = { ...currentUser, incompleteTime };
+
+              listChartData.splice(currentUserIdx, 1, newUser);
+            }
+          } else {
+            /**
+             * nếu chưa có user trong list data của tháng hiện tại
+             ** Tạo mới user
+             ** Và tăng compeleteTime hoặc incompeleteTime
+             */
+            const member = listMembers.find((memb) => memb.id === userId)!;
+            const newMember: ChartDataItemType = {
+              completeTime: 0,
+              incompleteTime: 0,
+              memberId: member.id,
+              memberName: member.name,
+            };
+
+            if (listDoneTaskStatus.includes(task.statusTask)) {
+              /** Trường hợp task đã done => tăng compeleteTime */
+              newMember.completeTime = fixPlusFloatingPointError([newMember.completeTime, task.estimateTime]);
+            } else {
+              /** Trường hợp task chưa done => tăng incompeleteTime */
+              newMember.incompleteTime = fixPlusFloatingPointError([newMember.incompleteTime, task.estimateTime]);
+            }
+
+            listChartData.push(newMember);
+          }
+        });
+
+        results[currentMonth] = listChartData;
+      }
+    });
+  });
+
+  return results;
+}
+
+// hàm này để fix lỗi 0.1 + 0.2 = 0.300000000000004 (Floating point error)
+export function fixPlusFloatingPointError(listNumbers: number[], precision = APP_PRECISION) {
+  const total = listNumbers.reduce((total, numb) => (total += numb * precision), 0);
+
+  return total / precision;
 }

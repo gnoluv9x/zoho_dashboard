@@ -23,8 +23,8 @@ const SelectCustom: React.FC<SelectCustomProps> = ({
   value,
   ...props
 }) => {
-  const handleChangeValue = (values: OptionTypes | OptionTypes[]) => {
-    onChangeValue(values);
+  const handleChangeValue = (values: unknown) => {
+    onChangeValue(values as OptionTypes | OptionTypes[]);
   };
 
   return (

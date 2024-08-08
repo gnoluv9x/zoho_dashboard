@@ -2,7 +2,7 @@ import { MIN_SELECTED_VALUES } from "@/constant";
 import { Option } from "@/types/type";
 import { ValueContainerProps, components } from "react-select";
 
-const ValueContainer = ({ children, ...props }: ValueContainerProps<Option<string | number>>) => {
+const ValueContainer = ({ children, ...props }: ValueContainerProps<unknown>) => {
   let [values, input] = children as any;
 
   if (Array.isArray(values) && values.length > MIN_SELECTED_VALUES) {

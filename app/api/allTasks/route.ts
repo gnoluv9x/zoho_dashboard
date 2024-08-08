@@ -184,8 +184,8 @@ export async function GET() {
                 taskDetail: value[itemProps.taskDetail],
                 idTaskNumber: value[itemProps.idTaskNumber], // id: 573, 574....
                 estimate, // khoảng thời gian (duration) estimate
-                estimateTime, // khoảng thời gian (duration) estimate tính theo giờ
-                estimatePoint: value[itemProps.estimatePoint], // Index của point trong dãy fibonanci
+                estimateTime, // khoảng thời gian (duration) estimate tính theo point: 1point = 1h
+                estimatePoint: value[itemProps.estimatePoint], // Index của point trong dãy fibonanci - 08/08: Bỏ qua
                 timeStart: value[itemProps.timeStart] === "-1" ? null : value[itemProps.timeStart], // Ngày bắt đầu task
                 timeEnd: value[itemProps.timeEnd] === "-1" ? null : value[itemProps.timeEnd], // Ngày kết thúc task
                 timeCreate: value[itemProps.timeCreate], // Ngày tạo task

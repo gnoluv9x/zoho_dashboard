@@ -1,17 +1,16 @@
-import { CommonInfo, IdAndNameType } from "@/types";
+import CommonTable from "@/components/common/Table";
+import { useAppContext } from "@/components/context/App";
+import { IdAndNameType } from "@/types";
 import { TableColumnCutom } from "@/types/table";
 import { TaskDetail } from "@/types/type";
 import { convertIsoStringDateToFormated, getFibonancyFromIndex } from "@/utils/helper";
 import React from "react";
-import CommonTable from "../Common/Table";
-import { useAppContext } from "@/app/context/App";
 
-interface TaskTableProps {
-  loading: boolean;
-}
+interface TaskTableProps {}
 
-const TaskTable: React.FC<TaskTableProps> = ({ loading }) => {
+const TaskTable: React.FC<TaskTableProps> = () => {
   const appContext = useAppContext();
+  const loading = appContext?.loading;
 
   const columns: TableColumnCutom<TaskDetail>[] = [
     {

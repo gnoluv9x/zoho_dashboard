@@ -1,13 +1,13 @@
-import { formatDateToString, getDateValue } from "@/utils/helper";
-import React, { useState } from "react";
-import { ReactDatePickerProps } from "react-datepicker";
-import { DatePickerStyled } from "./styled";
-import "react-datepicker/dist/react-datepicker.css";
+import { DatePickerStyled } from "@/components/common/DatePicker/styled";
 import { FORMATS_OF_DATE } from "@/types/type";
+import { formatDateToString, getDateValue } from "@/utils/helper";
+import React from "react";
+import { DatePickerProps } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { twMerge } from "tailwind-merge";
 
-interface DatepickerProps
-  extends Omit<ReactDatePickerProps, "onChange" | "dateFormat" | "minDate" | "maxDate" | "value"> {
+interface CustomDatepickerProps
+  extends Omit<DatePickerProps, "onChange" | "dateFormat" | "minDate" | "maxDate" | "value"> {
   dateFormat?: FORMATS_OF_DATE;
   placeholder?: string;
   onDateChange: (value: string | null) => void;
@@ -17,7 +17,7 @@ interface DatepickerProps
   [key: string]: any;
 }
 
-const DatepickerCustom: React.FC<DatepickerProps> = ({
+const DatepickerCustom: React.FC<CustomDatepickerProps> = ({
   dateFormat = FORMATS_OF_DATE["DEFAULT"],
   placeholder = "Vui lòng chọn ngày",
   onDateChange,
@@ -37,10 +37,10 @@ const DatepickerCustom: React.FC<DatepickerProps> = ({
       selected={value ? getDateValue(value, dateFormat) : undefined}
       dateFormat={dateFormat}
       placeholderText={placeholder}
-      className={twMerge("border-[1px] border-[#cccccc] px-2 rounded-md w-full h-[38px]", className)}
+      className={twMerge("h-[38px] w-full rounded-md border-[1px] border-[#cccccc] px-2", className)}
       onChange={handleChangeDate}
-      minDate={minDate ? getDateValue(minDate, dateFormat) : null}
-      maxDate={maxDate ? getDateValue(maxDate, dateFormat) : null}
+      minDate={minDate ? getDateValue(minDate, dateFormat) : undefined}
+      maxDate={maxDate ? getDateValue(maxDate, dateFormat) : undefined}
       {...props}
     />
   );

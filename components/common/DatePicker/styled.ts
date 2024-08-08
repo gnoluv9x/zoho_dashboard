@@ -8,4 +8,4 @@ export const DatePickerStyled = styled(DatePicker)`
   &&&.react-datepicker-wrapper {
     height: 36px;
   }
-`;
+` as any;

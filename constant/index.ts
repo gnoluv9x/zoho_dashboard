@@ -1,3 +1,6 @@
+import { FiltersType } from "@/types/type";
+import dayjs from "dayjs";
+
 export const ACCEPT_STATUS_CODE = { UNAUTH: 401, INVALID_FORMAT: 403, BAD_REQUEST: 400 };
 
 export const ACCESS_TOKEN_KEY = "accessToken";
@@ -17,6 +20,8 @@ export const DEFAULT_START_TIME = "2020-01-01";
 export const DEFAULT_END_TIME = "2050-01-01";
 
 export const MIN_SELECTED_VALUES = 3;
+
+export const APP_PRECISION = 100; // Số này để làm tròn trong app
 
 // Danh sách tên thuộc tính lấy từ ZOHO_API của task và tên thuộc tính của Response tương ứng
 export const ITEM_PROPS_NAME: Record<string, string> = {
@@ -56,4 +61,13 @@ export const ITEM_PROPS_NAME: Record<string, string> = {
   projItemTypeId: "itemTypeId",
   startDate: "timeStart",
   completedBy: "",
+};
+
+export const defaultFilters: FiltersType = {
+  startedDateRange: { start: "", end: "" },
+  createdDateRange: { start: "", end: "" },
+  status: null,
+  members: [],
+  project: null,
+  monthYear: dayjs().format("MM/YYYY"),
 };

@@ -27,7 +27,7 @@ export type ItemTypes = {
 };
 
 export type IdAndNameType = Omit<CommonInfo, "createdAt">;
-export type SprintDataType = IdAndNameType & { month?: string | null };
+export type SprintDataType = Required<IdAndNameType> & { month: string };
 
 export type AllSprintData = {
   projectId: string;

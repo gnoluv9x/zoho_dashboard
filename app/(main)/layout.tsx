@@ -1,12 +1,12 @@
-import React, { Suspense } from "react";
 import Header from "@/components/headers";
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { AppContextProvider } from "./context/App";
 import StyledComponentsRegistry from "@/libs/registry";
+import type { Metadata } from "next";
+import { Inter as FontSans } from "next/font/google";
+import React from "react";
+import { AppContextProvider } from "../../components/context/App";
+import "../global.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = FontSans({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "Zoho dashboard",
@@ -23,8 +23,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <body className={inter.className}>
         <StyledComponentsRegistry>
           <AppContextProvider>
-            <Header />
-            <>{children}</>
+            <main className="h-screen w-full px-3 pt-16">
+              <div className="container mx-auto">
+                <Header />
+                {children}
+              </div>
+            </main>
           </AppContextProvider>
         </StyledComponentsRegistry>
       </body>

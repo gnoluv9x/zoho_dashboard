@@ -1,39 +1,20 @@
-import { useAppContext } from "@/app/context/App";
-import { DEFAULT_END_TIME, DEFAULT_START_TIME } from "@/constant";
-import { FORMATS_OF_DATE, Option, TaskDetail } from "@/types/type";
+import DatepickerCustom from "@/components/common/DatePicker";
+import SelectCustom from "@/components/common/SelectCustom";
+import { OptionTypes } from "@/components/common/SelectCustom/type";
+import { useAppContext } from "@/components/context/App";
+import { Button } from "@/components/ui/button";
+import { DEFAULT_END_TIME, DEFAULT_START_TIME, defaultFilters } from "@/constant";
+import { FiltersType, FORMATS_OF_DATE, TaskDetail } from "@/types/type";
 import { checkTaskItemInSprintWithMonth, getDateValue, sortFollowDate } from "@/utils/helper";
 import React, { useState } from "react";
-import DatepickerCustom from "../Common/DatePicker";
-import SelectCustom from "../Common/SelectCustom";
-import { OptionTypes } from "../Common/SelectCustom/type";
-import dayjs from "dayjs";
 
-interface FilterProps {
-  allItems: TaskDetail[];
-}
+interface FilterProps {}
 
-type FiltersType = {
-  startedDateRange: { start: string; end: string };
-  createdDateRange: { start: string; end: string };
-  status: Option<string> | null;
-  members: Option<string>[];
-  project: Option<string> | null;
-  monthYear: string | null;
-};
-
-export const defaultFilters: FiltersType = {
-  startedDateRange: { start: "", end: "" },
-  createdDateRange: { start: "", end: "" },
-  status: null,
-  members: [],
-  project: null,
-  monthYear: dayjs().format("MM/YYYY"),
-};
-
-const Filter: React.FC<FilterProps> = ({ allItems }) => {
-  const [filters, setFilters] = useState<FiltersType>(defaultFilters);
-
+const Filter: React.FC<FilterProps> = () => {
   const appContext = useAppContext();
+  const allItems = appContext?.listAllItems || [];
+
+  const [filters, setFilters] = useState<FiltersType>(defaultFilters);
 
   const handleChangeDate = (
     value: string | null,
@@ -143,7 +124,7 @@ const Filter: React.FC<FilterProps> = ({ allItems }) => {
     <div className="grid grid-cols-12 gap-x-2">
       <div className="filter__startDate col-span-12 md:col-span-6 lg:col-span-4">
         <h5 className="font-bold">Date started</h5>
-        <div className="grid grid-cols-2 gap-3 h-[36px]">
+        <div className="grid h-[36px] grid-cols-2 gap-3">
           <div>
             <DatepickerCustom
               placeholder="Ngày bắt đầu"
@@ -219,7 +200,7 @@ const Filter: React.FC<FilterProps> = ({ allItems }) => {
           closeMenuOnSelect={false}
         />
       </div>
-      <div className="filter_month col-span-4 md:col-span-8 lg:col-span-2">
+      <div className="filter_month col-span-12 md:col-span-8 lg:col-span-2">
         <h5 className="font-bold">Tháng</h5>
         <DatepickerCustom
           placeholder="Lọc theo tháng"
@@ -229,18 +210,17 @@ const Filter: React.FC<FilterProps> = ({ allItems }) => {
           onDateChange={handleChangeMonth}
           showMonthYearPicker
           showFullMonthYearPicker
+          className="w-full"
         />
       </div>
-      <div className="mt-2 md:mt-0 flex justify-start md:justify-end xl:justify-start items-end gap-x-2 col-span-12 md:col-span-4 lg:col-span-2">
+      <div className="col-span-12 mt-2 flex items-end justify-start gap-x-2 md:col-span-4 md:mt-0 md:justify-end lg:col-span-2 xl:justify-start">
         <div className="filter__btnSubmit">
-          <button onClick={handleSubmitSearch} className="px-4 py-[6px] text-white bg-blue-600 rounded-md">
-            Search
-          </button>
+          <Button onClick={handleSubmitSearch}>Search</Button>
         </div>
         <div className="filter__btnSubmit">
-          <button onClick={handleClearFilter} className="px-4 py-[6px] text-white bg-slate-300 rounded-md">
+          <Button variant="outline" onClick={handleClearFilter}>
             Clear
-          </button>
+          </Button>
         </div>
       </div>
     </div>
