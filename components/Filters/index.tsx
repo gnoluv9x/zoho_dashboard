@@ -6,11 +6,14 @@ import { Button } from "@/components/ui/button";
 import { DEFAULT_END_TIME, DEFAULT_START_TIME, defaultFilters } from "@/constant";
 import { FiltersType, FORMATS_OF_DATE, TaskDetail } from "@/types/type";
 import { checkTaskItemInSprintWithMonth, getDateValue, sortFollowDate } from "@/utils/helper";
-import React, { useState } from "react";
+import { usePathname } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
 interface FilterProps {}
 
 const Filter: React.FC<FilterProps> = () => {
+  const pathname = usePathname();
+
   const appContext = useAppContext();
   const allItems = appContext?.listAllItems || [];
 
@@ -58,11 +61,6 @@ const Filter: React.FC<FilterProps> = () => {
       const startedDate = taskItem.timeStart ? new Date(taskItem.timeStart) : "";
       const createdDate = taskItem.timeCreate ? new Date(taskItem.timeCreate) : "";
 
-      // Lọc task theo tháng
-      if (filters.monthYear) {
-        return checkTaskItemInSprintWithMonth(appContext?.listSprints || [], taskItem, filters.monthYear);
-      }
-
       // Lọc task theo trạng thái
       if (filters.status?.value && taskItem.statusTask !== filters.status.value) {
         return false;
@@ -107,6 +105,11 @@ const Filter: React.FC<FilterProps> = () => {
         if (userWork.length === 0) return false;
       }
 
+      // Lọc task theo tháng
+      if (filters.monthYear) {
+        return checkTaskItemInSprintWithMonth(appContext?.listSprints || [], taskItem, filters.monthYear);
+      }
+
       return true;
     });
 
@@ -119,6 +122,10 @@ const Filter: React.FC<FilterProps> = () => {
   const handleChangeMonth = (value: any) => {
     setFilters((prevFilters) => ({ ...prevFilters, monthYear: value }));
   };
+
+  useEffect(() => {
+    handleSubmitSearch();
+  }, [pathname]);
 
   return (
     <div className="grid grid-cols-12 gap-x-2">

@@ -23,20 +23,19 @@ export const MemberPerfFilter: React.FC<MemberPerfFilterProps> = ({ filters, onC
 
   return (
     <div className="grid grid-cols-12 gap-x-2">
-      <div className="filter_month col-span-12 md:col-span-8 lg:col-span-2">
+      <div className="filter_month col-span-8 md:col-span-8 lg:col-span-2">
         <h5 className="font-bold">Tháng</h5>
         <DatepickerCustom
           placeholder="Lọc theo tháng"
           value={dateValue}
           dateFormat={FORMATS_OF_DATE.ONLY_MONTH_YEAR}
-          isClearable
           onDateChange={handleChangeMonth}
           showMonthYearPicker
           showFullMonthYearPicker
           className="w-full"
         />
       </div>
-      <div className="col-span-12 mt-2 flex items-end justify-start gap-x-2 md:col-span-4 md:mt-0 md:justify-end lg:col-span-2 xl:justify-start">
+      <div className="col-span-4 mt-2 flex items-end justify-start gap-x-2 md:col-span-4 md:mt-0 md:justify-end lg:col-span-2 xl:justify-start">
         <div className="filter__btnSubmit">
           <Button onClick={handleSubmitSearch}>Xem</Button>
         </div>

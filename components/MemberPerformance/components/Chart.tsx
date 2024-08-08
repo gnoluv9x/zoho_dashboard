@@ -39,7 +39,7 @@ export const MemberPerfChart: React.FC<MemberPerfChartProps> = ({ filters }) => 
     },
     incompleteTime: {
       label: "In progress",
-      color: "#bb2929",
+      color: "#be4141",
     },
   } satisfies ChartConfig;
 
@@ -50,7 +50,7 @@ export const MemberPerfChart: React.FC<MemberPerfChartProps> = ({ filters }) => 
   }, [filters.monthYear, appContext?.chartData]);
 
   return listChartData.length > 0 ? (
-    <ChartContainer config={chartConfig} className="min-h-[150px] w-10/12">
+    <ChartContainer config={chartConfig} className="mx-auto min-h-[250px] w-full 2xl:w-10/12">
       <BarChart accessibilityLayer data={listChartData}>
         <CartesianGrid />
         <XAxis dataKey="memberPercent" />
@@ -60,18 +60,18 @@ export const MemberPerfChart: React.FC<MemberPerfChartProps> = ({ filters }) => 
         <ChartLegend content={<ChartLegendContent className="pt-0" />} height={36} fontSize={24} />
         <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
         <Bar dataKey="estimateTime" fill="#2563eb" radius={4}>
-          <LabelList position="insideTop" offset={12} className="fill-white" fontSize={12} />
+          <LabelList position="insideTop" offset={12} className="hidden fill-white lg:inline-block" fontSize={12} />
         </Bar>
         <Bar dataKey="completeTime" fill="#5abb41" radius={4}>
-          <LabelList position="insideTop" offset={12} className="fill-white" fontSize={12} />
+          <LabelList position="insideTop" offset={12} className="hidden fill-white lg:inline-block" fontSize={12} />
         </Bar>
-        <Bar dataKey="incompleteTime" fill="#bb2929" radius={4}>
-          <LabelList position="insideTop" offset={12} className="fill-white" fontSize={12} />
+        <Bar dataKey="incompleteTime" fill="#be4141" radius={4}>
+          <LabelList position="insideTop" offset={12} className="hidden fill-white lg:inline-block" fontSize={12} />
         </Bar>
       </BarChart>
     </ChartContainer>
   ) : (
-    <div className="h-80">
+    <div className="relative h-80">
       <Empty />
     </div>
   );

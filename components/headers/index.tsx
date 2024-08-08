@@ -185,14 +185,14 @@ const Header: React.FC<HeaderProps> = () => {
   return (
     <header className="fixed left-0 right-0 top-0 z-header col-start-auto flex h-14 items-center justify-end bg-blue-600 px-5 text-sm font-bold text-white md:text-2xl">
       <div className="flex w-full flex-row justify-between text-white">
-        <div className="flex items-center gap-x-2">
+        <div className={cn("flex items-center gap-x-2", pathname !== "/" ? "invisible" : "")}>
           <div>Total tasks: {appContext?.renderItems.length}</div>
           <div className="hover:cursor-pointer" title="Tải xuống danh sách" onClick={handleExport}>
             <Image className="" src={"/download.svg"} width={28} height={28} alt="download icon" />
           </div>
         </div>
 
-        <div className="header-route flex flex-1 items-center justify-center gap-[2px] lg:gap-2">
+        <div className="flex flex-1 items-center justify-center gap-[2px] lg:gap-2">
           <Button
             variant="link"
             className={cn("group text-gray-400 hover:text-white hover:no-underline", [
@@ -201,11 +201,12 @@ const Header: React.FC<HeaderProps> = () => {
             onClick={() => router.push("/")}
           >
             <ListTodo
-              className={cn("mr-0 text-gray-400 hover:text-white group-hover:text-white lg:mr-2", [
+              className={cn("mr-0 text-sm text-gray-400 hover:text-white group-hover:text-white lg:mr-1", [
                 pathname === "/" ? "text-white" : "",
               ])}
-            />{" "}
-            <span className="hidden lg:inline">Task list</span>
+              size={20}
+            />
+            <span className="hidden text-lg lg:inline">Task list</span>
           </Button>
           <span className="my-auto">|</span>
           <Button
@@ -216,11 +217,12 @@ const Header: React.FC<HeaderProps> = () => {
             onClick={() => router.push("/member-performance")}
           >
             <ChartColumnBig
-              className={cn("mr-0 text-gray-400 group-hover:text-white lg:mr-2", [
+              size={20}
+              className={cn("mr-0 text-sm text-gray-400 group-hover:text-white lg:mr-1", [
                 pathname === "/member-performance" ? "text-white" : "",
               ])}
-            />{" "}
-            <span className="hidden lg:inline">Member performance</span>
+            />
+            <span className="hidden text-lg lg:inline">Member performance</span>
           </Button>
         </div>
 

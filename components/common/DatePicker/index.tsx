@@ -17,6 +17,8 @@ interface CustomDatepickerProps
   [key: string]: any;
 }
 
+const LIST_MONTHS = ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12"];
+
 const DatepickerCustom: React.FC<CustomDatepickerProps> = ({
   dateFormat = FORMATS_OF_DATE["DEFAULT"],
   placeholder = "Vui lòng chọn ngày",
@@ -32,6 +34,10 @@ const DatepickerCustom: React.FC<CustomDatepickerProps> = ({
     onDateChange(dateVal);
   };
 
+  const renderMonthContent = (month: number) => {
+    return <div className="p-2">{LIST_MONTHS[month]}</div>;
+  };
+
   return (
     <DatePickerStyled
       selected={value ? getDateValue(value, dateFormat) : undefined}
@@ -41,6 +47,7 @@ const DatepickerCustom: React.FC<CustomDatepickerProps> = ({
       onChange={handleChangeDate}
       minDate={minDate ? getDateValue(minDate, dateFormat) : undefined}
       maxDate={maxDate ? getDateValue(maxDate, dateFormat) : undefined}
+      renderMonthContent={renderMonthContent}
       {...props}
     />
   );

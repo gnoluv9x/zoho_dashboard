@@ -130,11 +130,11 @@ export function getMonthFromSprintName(sprintName: string): string {
 
 // hàm kiểm tra xem task có nằm trong sprint có bộ lọc theo tháng không? Sprint này sẽ có tên format dạng: Sprint 20 (T08/2024)
 export function checkTaskItemInSprintWithMonth(
-  list: SprintDataType[],
+  listSprints: SprintDataType[],
   taskItem: TaskDetail,
   filterMonth: string,
 ): boolean {
-  const listSprintsHasMonth = list.reduce<string[]>((result, sprint) => {
+  const listSprintsHasMonth = listSprints.reduce<string[]>((result, sprint) => {
     if (sprint.month && filterMonth === sprint.month) {
       result.push(sprint.id);
     }
