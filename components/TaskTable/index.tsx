@@ -1,7 +1,7 @@
 import CommonTable from "@/components/common/Table";
 import { useAppContext } from "@/components/context/App";
 import { IdAndNameType } from "@/types";
-import { TableColumnCutom } from "@/types/table";
+import { TableColumnCustom } from "@/types/table";
 import { TaskDetail } from "@/types/type";
 import { convertIsoStringDateToFormated, getFibonancyFromIndex } from "@/utils/helper";
 import React from "react";
@@ -12,11 +12,16 @@ const TaskTable: React.FC<TaskTableProps> = () => {
   const appContext = useAppContext();
   const loading = appContext?.loading;
 
-  const columns: TableColumnCutom<TaskDetail>[] = [
+  const columns: TableColumnCustom<TaskDetail>[] = [
     {
       fieldName: "name",
       heading: "Name task",
       align: "left",
+      customCell: (info) => (
+        <div className="line-clamp-3" title={info.getValue()}>
+          {info.getValue()}
+        </div>
+      ),
     },
     {
       fieldName: "idTaskNumber",
@@ -24,14 +29,14 @@ const TaskTable: React.FC<TaskTableProps> = () => {
       align: "left",
     },
     {
-      fieldName: "estimate",
-      heading: "Duration",
+      fieldName: "durationTime",
+      heading: "Duration time",
       align: "left",
       customCell: (info) => (info.getValue() === "-1" ? "-" : info.getValue()),
     },
     {
-      fieldName: "estimateTime",
-      heading: "Estimate time (h)",
+      fieldName: "durationPoint",
+      heading: "Duration point",
       align: "left",
       customCell: (info) => (info.getValue() === "-1" ? 0 : info.getValue()),
     },

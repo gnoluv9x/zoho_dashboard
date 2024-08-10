@@ -34,7 +34,7 @@ export const ITEM_PROPS_NAME: Record<string, string> = {
   addedVia: "",
   hasCheckList: "",
   leftPosition: "",
-  duration: "estimate",
+  duration: "durationTime",
   itemEpicSeq: "",
   itemName: "name",
   startAfter: "",

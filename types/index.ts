@@ -27,7 +27,7 @@ export type ItemTypes = {
 };
 
 export type IdAndNameType = Omit<CommonInfo, "createdAt">;
-export type SprintDataType = Required<IdAndNameType> & { month: string };
+export type SprintDataType = Required<IdAndNameType> & { month: string; projectId: string };
 
 export type AllSprintData = {
   projectId: string;
@@ -61,3 +61,7 @@ export type ZohoItemDetail = {
 };
 
 export type FinalResponse = { items: any; sprints: AllSprintData[]; teamId: string; projects: ProjectResponse };
+
+export type SprintsInProjectType = Array<Omit<SprintDataType, "projectId"> & { sprintNumber: number }>;
+
+export type ListMonthsFollowProjectId = Record<string, Record<string, SprintsInProjectType>>; // { "project1" : { "08/2024" : [{id: 1, name: "Sprint 1"}]}}

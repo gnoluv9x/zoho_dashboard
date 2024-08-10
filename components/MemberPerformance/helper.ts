@@ -1,5 +1,5 @@
 import { ChartDataItemType } from "@/types/type";
-import { fixPlusFloatingPointError } from "@/utils/helper";
+import { fixCalculateFloatingPointError } from "@/utils/helper";
 
 export function getChartRenderData(
   chartData: Record<string, ChartDataItemType[]>,
@@ -10,14 +10,17 @@ export function getChartRenderData(
   if (!currentMonthList) return [];
 
   const results = currentMonthList.reduce<ChartDataItemType[]>((lists, currentMember) => {
-    if (!currentMember.memberName.toLowerCase().includes("unassigned")) {
-      // loại bỏ member unassigned (gồm những task chưa gán)
-      const totalET = fixPlusFloatingPointError([currentMember.incompleteTime, currentMember.completeTime]); // ET = tổng duration trong tháng
-
-      const percent = ((currentMember.completeTime * 100) / totalET).toFixed(1);
+    if (!currentMember.memberName.toLowerCase().includes("unassigned") && currentMember.estimateTime !== 0) {
+      // loại bỏ member unassigned (gồm những task chưa gán cho ai)
+      let percent = ((currentMember.actualTime * 100) / currentMember.estimateTime).toFixed(1);
       const memberPercent = currentMember.memberName + ` (${percent}%)`;
+      const incompleteTimeTemp = fixCalculateFloatingPointError(
+        [currentMember.estimateTime, currentMember.actualTime],
+        "minus",
+      );
+      const incompleteTime = Math.max(0, incompleteTimeTemp); // bỏ số âm
 
-      lists.push({ ...currentMember, estimateTime: totalET, memberPercent });
+      lists.push({ ...currentMember, memberPercent, incompleteTime });
     }
 
     return lists;

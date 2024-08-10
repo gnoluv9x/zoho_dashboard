@@ -1,9 +1,9 @@
-import { CellContext, HeaderContext } from "@tanstack/react-table";
+import { CellContext } from "@tanstack/react-table";
 import React from "react";
 
 type StringOrCallback = string | (() => string);
 
-export type TableColumnCutom<T> = {
+export type TableColumnCustom<T> = {
   fieldName: keyof T;
   heading: StringOrCallback;
   align?: "left" | "right" | "center";

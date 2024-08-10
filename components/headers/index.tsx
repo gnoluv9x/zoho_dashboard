@@ -7,11 +7,11 @@ import { ACCESS_TOKEN_KEY } from "@/constant";
 import { AllSprintData, CommonInfo, FinalResponse, IdAndNameType, ItemTypes, SprintDataType } from "@/types";
 import { TaskDetail } from "@/types/type";
 import axiosClient from "@/utils/api";
+import { getChartDataFromItems } from "@/utils/chart";
 import {
   checkTaskItemInSprintWithMonth,
   cn,
   convertIsoStringDateToFormated,
-  getChartDataFromItems,
   getFibonancyFromIndex,
   removeDuplicate,
   sortFollowDate,
@@ -72,8 +72,8 @@ const Header: React.FC<HeaderProps> = () => {
             return {
               "Name task": item?.name,
               "Id task": item?.idTaskNumber,
-              Duration: item?.estimate === "-1" ? "" : item?.estimate,
-              "Estimate time": item?.estimateTime,
+              "Duration time": item?.durationTime === "-1" ? "" : item?.durationTime,
+              "Duration point": item?.durationPoint,
               "Estimate point": getFibonancyFromIndex(Number(item.estimatePoint)),
               "Id sprint": spintItem?.name ?? "",
               "Status task": status?.name ?? "",
@@ -88,8 +88,8 @@ const Header: React.FC<HeaderProps> = () => {
             {
               "Name task": null,
               "Id task": null,
-              Duration: null,
-              "Extimate point": null,
+              "Duration time": null,
+              "Duration point": null,
               "Id Sprint": null,
               "Status task": null,
               "Date created": null,

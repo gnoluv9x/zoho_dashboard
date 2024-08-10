@@ -1,6 +1,6 @@
 import Pagination from "@/components/Pagination";
 import { DEFAULT_PAGE, PAGE_SIZE_OPTIONS } from "@/constant";
-import { TableColumnCutom } from "@/types/table";
+import { TableColumnCustom } from "@/types/table";
 import {
   PaginationState,
   createColumnHelper,
@@ -15,7 +15,7 @@ import { TableStyled } from "./styled";
 interface TableProps<T> {
   loading?: boolean;
   data: T[];
-  columns: TableColumnCutom<T>[];
+  columns: TableColumnCustom<T>[];
   paginationProps?: PaginationState & {
     className?: string;
     align?: "left" | "right" | "center";
@@ -97,7 +97,7 @@ const CommonTable = <T extends object>({
               );
             })
           ) : (
-            <tr className="empty__row w-full h-[400px] bg-slate-50">
+            <tr className="empty__row h-[400px] w-full bg-slate-50">
               <td colSpan={listTitles.length}>
                 <Empty />
               </td>

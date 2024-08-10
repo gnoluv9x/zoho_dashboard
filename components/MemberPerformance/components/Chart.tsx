@@ -12,6 +12,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { ChartDataItemType } from "@/types/type";
+import { cn } from "@/utils/helper";
 import React, { useEffect, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Label, LabelList, XAxis, YAxis } from "recharts";
 
@@ -33,7 +34,7 @@ export const MemberPerfChart: React.FC<MemberPerfChartProps> = ({ filters }) => 
       label: "ET",
       color: "#2563eb",
     },
-    completeTime: {
+    actualTime: {
       label: "AT",
       color: "#5abb41",
     },
@@ -62,7 +63,7 @@ export const MemberPerfChart: React.FC<MemberPerfChartProps> = ({ filters }) => 
         <Bar dataKey="estimateTime" fill="#2563eb" radius={4}>
           <LabelList position="insideTop" offset={12} className="hidden fill-white lg:inline-block" fontSize={12} />
         </Bar>
-        <Bar dataKey="completeTime" fill="#5abb41" radius={4}>
+        <Bar dataKey="actualTime" fill="#5abb41" radius={4}>
           <LabelList position="insideTop" offset={12} className="hidden fill-white lg:inline-block" fontSize={12} />
         </Bar>
         <Bar dataKey="incompleteTime" fill="#be4141" radius={4}>

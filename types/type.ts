@@ -17,11 +17,11 @@ export type TaskDetail = {
   name: string;
   taskDetail: string;
   idTaskNumber: string;
-  estimate: string;
   timeStart: string;
   timeEnd: string;
   estimatePoint: string;
-  estimateTime: number;
+  durationTime: string;
+  durationPoint: number;
   timeCreate: string;
   sprintId: string;
   statusTask: string;
@@ -59,12 +59,12 @@ export type AppContextType = {
 };
 
 export type ChartDataItemType = {
-  incompleteTime: number;
-  completeTime: number;
-  estimateTime?: number;
+  estimateTime: number;
+  actualTime: number;
   memberId: string;
   memberName: string;
   memberPercent?: string;
+  incompleteTime?: number;
 };
 
 export type FiltersType = {

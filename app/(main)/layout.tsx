@@ -1,5 +1,5 @@
 import Header from "@/components/headers";
-import StyledComponentsRegistry from "@/libs/registry";
+import StyledComponentsRegistry from "@/lib/registry";
 import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
 import React from "react";

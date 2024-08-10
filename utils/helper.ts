@@ -1,6 +1,6 @@
 import { APP_PRECISION, ITEM_PROPS_NAME } from "@/constant";
-import { CommonInfo, IdAndNameType, ItemTypes, SprintDataType } from "@/types";
-import { ChartDataItemType, FORMATS_OF_DATE, TaskDetail } from "@/types/type";
+import { ListMonthsFollowProjectId, SprintDataType, SprintsInProjectType } from "@/types";
+import { FORMATS_OF_DATE, TaskDetail } from "@/types/type";
 import classNames from "classnames";
 import { twMerge } from "tailwind-merge";
 
@@ -161,96 +161,90 @@ export function convertTimeToHours(timeString: string): number {
   return Math.round(totalHours * APP_PRECISION) / APP_PRECISION;
 }
 
-// hàm lấy thông tin chart
-export function getChartDataFromItems(
-  listItems: TaskDetail[],
-  listSprints: SprintDataType[],
-  listStatus: CommonInfo[],
-  listMembers: IdAndNameType[],
-): Record<string, ChartDataItemType[]> {
-  if (listItems.length === 0) return {};
+/*
+ * Hàm này để fix lỗi 0.1 + 0.2 = 0.300000000000004 (Floating point error)
+ */
+export function fixCalculateFloatingPointError(
+  listNumbers: number[],
+  operation: "plus" | "minus" = "plus",
+  precision = APP_PRECISION,
+) {
+  let total = 0;
 
-  const listSprintsHasMonth = listSprints.filter((sprint) => sprint.month);
-
-  const listDoneTaskStatus: string[] = []; // Danh sách các trạng thái task đã done
-
-  listStatus.forEach((status) => {
-    if (status.name.toLowerCase().includes("done")) {
-      listDoneTaskStatus.push(status.id);
-    }
-  });
-
-  const results: Record<string, ChartDataItemType[]> = {};
-  listSprintsHasMonth.forEach((sprint) => {
-    listItems.forEach((task) => {
-      if (task.sprintId === sprint.id && !task.itemTypeTitle.toLowerCase().includes("bug")) {
-        // Chỉ lấy các task có sprint title có dạng:  Sprint 2 (T8_24) và không phải bug
-        const currentMonth = sprint.month; // Ví dụ: 08/2024
-        const listChartData: ChartDataItemType[] = results?.[currentMonth] || [];
-
-        task.userWork.forEach((userId) => {
-          const currentUserIdx = listChartData.findIndex((chartData) => chartData.memberId === userId);
-
-          if (currentUserIdx !== -1) {
-            /*
-             * nếu đã có user trong list data của tháng hiện tại
-             ** cộng dồn compeleteTime hoặc incompeleteTime với duration hiện tại dựa trên status của task hiện tại (đã done hay chưa)
-             */
-
-            const currentUser = listChartData[currentUserIdx];
-            const currentUserEstimateTime = task.estimateTime;
-
-            if (listDoneTaskStatus.includes(task.statusTask)) {
-              // trường hợp task đã done => tăng compeleteTime
-              const completeTime = fixPlusFloatingPointError([currentUser.completeTime, currentUserEstimateTime]);
-              const newUser: ChartDataItemType = { ...currentUser, completeTime };
-
-              listChartData.splice(currentUserIdx, 1, newUser);
-            } else {
-              // trường hợp task chưa done => tăng incompeleteTime
-              const incompleteTime = fixPlusFloatingPointError([currentUser.incompleteTime, currentUserEstimateTime]);
-
-              const newUser: ChartDataItemType = { ...currentUser, incompleteTime };
-
-              listChartData.splice(currentUserIdx, 1, newUser);
-            }
-          } else {
-            /**
-             * nếu chưa có user trong list data của tháng hiện tại
-             ** Tạo mới user
-             ** Và tăng compeleteTime hoặc incompeleteTime
-             */
-            const member = listMembers.find((memb) => memb.id === userId)!;
-            const newMember: ChartDataItemType = {
-              completeTime: 0,
-              incompleteTime: 0,
-              memberId: member.id,
-              memberName: member.name,
-            };
-
-            if (listDoneTaskStatus.includes(task.statusTask)) {
-              /** Trường hợp task đã done => tăng compeleteTime */
-              newMember.completeTime = fixPlusFloatingPointError([newMember.completeTime, task.estimateTime]);
-            } else {
-              /** Trường hợp task chưa done => tăng incompeleteTime */
-              newMember.incompleteTime = fixPlusFloatingPointError([newMember.incompleteTime, task.estimateTime]);
-            }
-
-            listChartData.push(newMember);
-          }
-        });
-
-        results[currentMonth] = listChartData;
+  if (operation === "plus") {
+    total = listNumbers.reduce((result, numb) => (result += numb * precision), 0);
+  } else {
+    const initValue = Math.round(listNumbers[0] * precision);
+    total = listNumbers.reduce((result, numb, idx) => {
+      if (idx !== 0) {
+        result -= Math.round(numb * precision);
       }
-    });
-  });
 
-  return results;
-}
-
-// hàm này để fix lỗi 0.1 + 0.2 = 0.300000000000004 (Floating point error)
-export function fixPlusFloatingPointError(listNumbers: number[], precision = APP_PRECISION) {
-  const total = listNumbers.reduce((total, numb) => (total += numb * precision), 0);
+      return result;
+    }, initValue);
+  }
 
   return total / precision;
+}
+
+/**
+ * Hàm này nhận vào tên sprint: Sprint 23 (T1_24) và trả ra số sprint: 23
+ */
+export function getCurrentSprintFromName(name: string): number {
+  const regex = /\b(\d+)\s*(?:\(|\b)/;
+  const match = name.trim().match(regex);
+
+  if (match) {
+    return parseInt(match[1]);
+  }
+
+  return 0;
+}
+
+/**
+ * Hàm này nhận vào tên task: [38][FE] Cập nhật trang bán hàng => trả về 38 (sprint của task)
+ */
+export function getSprintNameInTaskName(taskName: string): number {
+  const match = taskName.trim().match(/^\[(\d+)\]/);
+
+  return match ? parseInt(match[1]) : 0;
+}
+
+/**
+ *
+ * @param listSprints SprintDataType[]
+ * @returns { "projectId" : { "month" : []}}
+ */
+export function getListProjectWithMonth(listSprints: SprintDataType[]): ListMonthsFollowProjectId {
+  if (listSprints.length === 0) return {};
+
+  return listSprints.reduce<ListMonthsFollowProjectId>((lists, spr) => {
+    if (spr.month) {
+      const currentMonth = spr.month;
+      const currentProjectId = spr.projectId;
+      const projectData = lists[currentProjectId];
+      const sprintNumber = getCurrentSprintFromName(spr.name);
+
+      if (projectData) {
+        const currentMonthData = projectData[currentMonth];
+
+        if (currentMonthData) {
+          const currentSprintData = { id: spr.id, name: spr.name, month: currentMonth, sprintNumber };
+          currentMonthData.push(currentSprintData);
+        } else {
+          const listSprints: SprintsInProjectType = [{ id: spr.id, month: currentMonth, sprintNumber, name: spr.name }];
+
+          projectData[currentMonth] = listSprints;
+        }
+      } else {
+        const currentSprintDataInMonth: Record<string, SprintsInProjectType> = {
+          [currentMonth]: [{ id: spr.id, sprintNumber, month: currentMonth, name: spr.name }],
+        }; // { "08/2024": []}
+
+        lists[currentProjectId] = currentSprintDataInMonth;
+      }
+    }
+
+    return lists;
+  }, {});
 }

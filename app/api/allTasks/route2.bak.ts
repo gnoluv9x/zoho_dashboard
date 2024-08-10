@@ -87,7 +87,6 @@ export async function GET() {
           ? Object.keys(sprintData.userDisplayName)?.[0]
           : "";
 
-      console.dir(sprintData?.sprintJObj, { depth: null });
       const sprintItem = {
         listing: sprintData?.sprintJObj
           ? Object.keys(sprintData.sprintJObj || {}).reduce((acc, currentKey) => {
@@ -97,7 +96,6 @@ export async function GET() {
                 id: currentKey,
                 name: data[0],
                 month,
-                projectId,
               };
               acc.push(value as never);
               return acc;
