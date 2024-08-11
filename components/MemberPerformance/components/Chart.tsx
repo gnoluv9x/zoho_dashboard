@@ -13,8 +13,6 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { ChartDataItemType } from "@/types/type";
-import { cn } from "@/utils/helper";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
 import React, { useEffect, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Label, LabelList, XAxis, YAxis } from "recharts";
 
@@ -33,18 +31,20 @@ export const MemberPerfChart: React.FC<MemberPerfChartProps> = ({ filters }) => 
 
   const chartConfig = {
     estimateTime: {
-      label: <ChartLabelTooltip label="ET" content="Estimate time: Tổng thời gian các task được giao trong tháng" />,
+      label: (
+        <ChartLabelTooltip label="ET" content="Estimate time: Tổng thời gian (h) các task được giao trong tháng" />
+      ),
       color: "#2563eb",
     },
     actualTime: {
-      label: <ChartLabelTooltip label="AT" content="Actual time: Tổng thời gian các task hoàn thiện trong tháng" />,
+      label: <ChartLabelTooltip label="AT" content="Actual time: Tổng thời gian (h) các task hoàn thiện trong tháng" />,
       color: "#5abb41",
     },
     incompleteTime: {
       label: (
         <ChartLabelTooltip
           label="In progress"
-          content="Inprogress: Tổng thời gian các task chưa hoàn thiện trong tháng"
+          content="Inprogress: Tổng thời gian (h) các task chưa hoàn thiện trong tháng"
         />
       ),
       color: "#be4141",
@@ -61,19 +61,19 @@ export const MemberPerfChart: React.FC<MemberPerfChartProps> = ({ filters }) => 
     <ChartContainer config={chartConfig} className="mx-auto min-h-[250px] w-full 2xl:w-10/12">
       <BarChart accessibilityLayer data={listChartData}>
         <CartesianGrid />
-        <XAxis dataKey="memberPercent" />
-        <YAxis>
+        <XAxis dataKey="memberPercent" dy={3} />
+        <YAxis className="chart-y-axis">
           <Label value="Hours" angle={-90} position="insideLeft" fontSize={16} />
         </YAxis>
         <ChartLegend content={<ChartLegendContent className="pt-0" />} height={36} fontSize={24} />
         <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-        <Bar dataKey="estimateTime" fill="#2563eb" radius={4}>
+        <Bar dataKey="estimateTime" fill="#2563eb" radius={3}>
           <LabelList position="insideTop" offset={12} className="hidden fill-white lg:inline-block" fontSize={12} />
         </Bar>
-        <Bar dataKey="actualTime" fill="#5abb41" radius={4}>
+        <Bar dataKey="actualTime" fill="#5abb41" radius={3}>
           <LabelList position="insideTop" offset={12} className="hidden fill-white lg:inline-block" fontSize={12} />
         </Bar>
-        <Bar dataKey="incompleteTime" fill="#be4141" radius={4}>
+        <Bar dataKey="incompleteTime" fill="#be4141" radius={3}>
           <LabelList position="insideTop" offset={12} className="hidden fill-white lg:inline-block" fontSize={12} />
         </Bar>
       </BarChart>

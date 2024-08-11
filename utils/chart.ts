@@ -45,8 +45,6 @@ export function getChartDataFromItems(
       task.durationPoint > 0 &&
       !task.itemTypeTitle.toLowerCase().includes("bug")
     ) {
-      console.log("Debug_here sprintNumberOfCreatedTask: ", sprintNumberOfCreatedTask);
-      console.log("Debug_here currentSprintInTitleTask: ", currentSprintInTitleTask);
       /**
        * Chỉ được tính duration là các task có:
         + Trong project chứa task phải có sprint đúng format task (xem file README.md)
@@ -83,108 +81,112 @@ export function getChartDataFromItems(
         });
       });
 
-      const isChangeMonthWhenChangePrefixNameInTask = monthOfSprintThatCreatedTask !== monthOfSprintInTitleTask;
+      if (monthOfSprintThatCreatedTask && monthOfSprintInTitleTask) {
+        const isChangeMonthWhenChangePrefixNameInTask = monthOfSprintThatCreatedTask !== monthOfSprintInTitleTask;
 
-      task.userWork.forEach((userId) => {
-        let sprintNeedCheck: SprintsInProjectType = [];
-        if (isChangeMonthWhenChangePrefixNameInTask || sprintNumberOfCreatedTask !== currentSprintInTitleTask) {
-          // nếu thay đổi prefix làm thay đổi tháng hoặc thay đổi sprint
-          const monthSprintThatCreatedTask = monthsWithSprintData[monthOfSprintThatCreatedTask];
-          const monthSprintInTitleTask = monthsWithSprintData[monthOfSprintInTitleTask];
-          const sprintThatTaskCreatedTask = monthSprintThatCreatedTask.find(
-            (spr) => spr.sprintNumber === sprintNumberOfCreatedTask,
-          );
-          const sprintInTitleTask = monthSprintInTitleTask.find((spr) => spr.sprintNumber === currentSprintInTitleTask);
-          sprintNeedCheck = [sprintThatTaskCreatedTask!, sprintInTitleTask!];
-        } else {
-          // nếu thay đổi prefix ko làm thay đổi sprint
-          const monthSprintsData = monthsWithSprintData[monthOfSprintInTitleTask];
-          const currentSprint = monthSprintsData.find(
-            (spr) => spr.month === monthOfSprintInTitleTask && spr.sprintNumber === sprintNumberOfCreatedTask,
-          );
-          sprintNeedCheck = [currentSprint!];
-        }
+        task.userWork.forEach((userId) => {
+          let sprintNeedCheck: SprintsInProjectType = [];
+          if (isChangeMonthWhenChangePrefixNameInTask || sprintNumberOfCreatedTask !== currentSprintInTitleTask) {
+            // nếu thay đổi prefix làm thay đổi tháng hoặc thay đổi sprint
+            const monthSprintThatCreatedTask = monthsWithSprintData[monthOfSprintThatCreatedTask];
+            const monthSprintInTitleTask = monthsWithSprintData[monthOfSprintInTitleTask];
+            const sprintThatTaskCreatedTask = monthSprintThatCreatedTask.find(
+              (spr) => spr.sprintNumber === sprintNumberOfCreatedTask,
+            );
+            const sprintInTitleTask = monthSprintInTitleTask.find(
+              (spr) => spr.sprintNumber === currentSprintInTitleTask,
+            );
+            sprintNeedCheck = [sprintThatTaskCreatedTask!, sprintInTitleTask!];
+          } else {
+            // nếu thay đổi prefix ko làm thay đổi sprint
+            const monthSprintsData = monthsWithSprintData[monthOfSprintInTitleTask];
+            const currentSprint = monthSprintsData.find(
+              (spr) => spr.month === monthOfSprintInTitleTask && spr.sprintNumber === sprintNumberOfCreatedTask,
+            );
+            sprintNeedCheck = [currentSprint!];
+          }
 
-        if (sprintNeedCheck.length > 0) {
-          sprintNeedCheck.forEach((sprint) => {
-            const currentMonth = sprint.month;
+          if (sprintNeedCheck.length > 0) {
+            sprintNeedCheck.forEach((sprint) => {
+              const currentMonth = sprint.month;
 
-            /**
-             * Tăng ET trong TH:
-              - task được tạo ở sprint hiện tại + (ko phải task làm nhanh hoặc làm nhanh + chưa done)
-              - tạo ở sprint khác và là task làm chậm (miss deadline)
-            */
-            const isIncreateET =
-              (task.sprintId === sprint.id && (!isEarlyCompletion || (isEarlyCompletion && !isDoneTask))) ||
-              (task.sprintId !== sprint.id && isMissedDeadline);
-
-            /**
-             * Tăng AT trong TH:
-              - Tên prefix của task = sprint hiện tại + done
-              - Tạo ở sprint hiện tại + prefix hiện tại + done + ko phải task làm nhanh
-            */
-            const isIncreaseAT =
-              (currentSprintInTitleTask === sprint.sprintNumber && isDoneTask) ||
-              (task.sprintId === sprint.id &&
-                currentSprintInTitleTask === sprint.sprintNumber &&
-                isDoneTask &&
-                !isEarlyCompletion);
-
-            const listChartData: ChartDataItemType[] = results?.[currentMonth] || [];
-
-            const currentMemberIdx = listChartData.findIndex((chartData) => chartData.memberId === userId);
-
-            if (currentMemberIdx !== -1) {
-              /*
-               * nếu đã có member trong list chartData của tháng hiện tại
-               */
-              const chartDataForMember = listChartData[currentMemberIdx];
-
-              if (isIncreateET) {
-                chartDataForMember.estimateTime = fixCalculateFloatingPointError([
-                  chartDataForMember.estimateTime,
-                  task.durationPoint,
-                ]);
-              }
-
-              if (isIncreaseAT) {
-                chartDataForMember.actualTime = fixCalculateFloatingPointError([
-                  chartDataForMember.actualTime,
-                  task.durationPoint,
-                ]);
-              }
-
-              listChartData.splice(currentMemberIdx, 1, chartDataForMember);
-            } else {
               /**
-               * nếu chưa có user trong list data của tháng hiện tại
-               ** Tạo mới user
-               ** Và tăng ET hoặc AT
-               */
-              const member = listMembers.find((memb) => memb.id === userId)!;
+               * Tăng ET trong TH:
+                - task được tạo ở sprint hiện tại + (ko phải task làm nhanh hoặc làm nhanh + chưa done)
+                - tạo ở sprint khác và là task làm chậm (miss deadline)
+              */
+              const isIncreateET =
+                (task.sprintId === sprint.id && (!isEarlyCompletion || (isEarlyCompletion && !isDoneTask))) ||
+                (task.sprintId !== sprint.id && isMissedDeadline);
 
-              const newMember: ChartDataItemType = {
-                estimateTime: 0,
-                actualTime: 0,
-                memberId: member.id,
-                memberName: member.name,
-              };
+              /**
+               * Tăng AT trong TH:
+                - Tên prefix của task = sprint hiện tại + done
+                - Tạo ở sprint hiện tại + prefix hiện tại + done + ko phải task làm nhanh
+              */
+              const isIncreaseAT =
+                (currentSprintInTitleTask === sprint.sprintNumber && isDoneTask) ||
+                (task.sprintId === sprint.id &&
+                  currentSprintInTitleTask === sprint.sprintNumber &&
+                  isDoneTask &&
+                  !isEarlyCompletion);
 
-              if (isIncreateET) {
-                newMember.estimateTime = fixCalculateFloatingPointError([newMember.estimateTime, task.durationPoint]);
+              const listChartData: ChartDataItemType[] = results?.[currentMonth] || [];
+
+              const currentMemberIdx = listChartData.findIndex((chartData) => chartData.memberId === userId);
+
+              if (currentMemberIdx !== -1) {
+                /*
+                 * nếu đã có member trong list chartData của tháng hiện tại
+                 */
+                const chartDataForMember = listChartData[currentMemberIdx];
+
+                if (isIncreateET) {
+                  chartDataForMember.estimateTime = fixCalculateFloatingPointError([
+                    chartDataForMember.estimateTime,
+                    task.durationPoint,
+                  ]);
+                }
+
+                if (isIncreaseAT) {
+                  chartDataForMember.actualTime = fixCalculateFloatingPointError([
+                    chartDataForMember.actualTime,
+                    task.durationPoint,
+                  ]);
+                }
+
+                listChartData.splice(currentMemberIdx, 1, chartDataForMember);
+              } else {
+                /**
+                 * nếu chưa có user trong list data của tháng hiện tại
+                 ** Tạo mới user
+                 ** Và tăng ET hoặc AT
+                 */
+                const member = listMembers.find((memb) => memb.id === userId)!;
+
+                const newMember: ChartDataItemType = {
+                  estimateTime: 0,
+                  actualTime: 0,
+                  memberId: member.id,
+                  memberName: member.name,
+                };
+
+                if (isIncreateET) {
+                  newMember.estimateTime = fixCalculateFloatingPointError([newMember.estimateTime, task.durationPoint]);
+                }
+
+                if (isIncreaseAT) {
+                  newMember.actualTime = fixCalculateFloatingPointError([newMember.actualTime, task.durationPoint]);
+                }
+
+                listChartData.push(newMember);
               }
 
-              if (isIncreaseAT) {
-                newMember.actualTime = fixCalculateFloatingPointError([newMember.actualTime, task.durationPoint]);
-              }
-
-              listChartData.push(newMember);
-            }
-
-            results[currentMonth] = listChartData;
-          });
-        }
-      });
+              results[currentMonth] = listChartData;
+            });
+          }
+        });
+      }
     }
   });
 
