@@ -2,6 +2,7 @@
 
 import Empty from "@/components/common/Empty";
 import { useAppContext } from "@/components/context/App";
+import { ChartLabelTooltip } from "@/components/MemberPerformance/components/ChartLabelTooltip";
 import { getChartRenderData } from "@/components/MemberPerformance/helper";
 import {
   ChartConfig,
@@ -13,6 +14,7 @@ import {
 } from "@/components/ui/chart";
 import { ChartDataItemType } from "@/types/type";
 import { cn } from "@/utils/helper";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
 import React, { useEffect, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Label, LabelList, XAxis, YAxis } from "recharts";
 
@@ -31,15 +33,20 @@ export const MemberPerfChart: React.FC<MemberPerfChartProps> = ({ filters }) => 
 
   const chartConfig = {
     estimateTime: {
-      label: "ET",
+      label: <ChartLabelTooltip label="ET" content="Estimate time: Tổng thời gian các task được giao trong tháng" />,
       color: "#2563eb",
     },
     actualTime: {
-      label: "AT",
+      label: <ChartLabelTooltip label="AT" content="Actual time: Tổng thời gian các task hoàn thiện trong tháng" />,
       color: "#5abb41",
     },
     incompleteTime: {
-      label: "In progress",
+      label: (
+        <ChartLabelTooltip
+          label="In progress"
+          content="Inprogress: Tổng thời gian các task chưa hoàn thiện trong tháng"
+        />
+      ),
       color: "#be4141",
     },
   } satisfies ChartConfig;

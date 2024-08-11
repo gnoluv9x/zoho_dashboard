@@ -45,6 +45,8 @@ export function getChartDataFromItems(
       task.durationPoint > 0 &&
       !task.itemTypeTitle.toLowerCase().includes("bug")
     ) {
+      console.log("Debug_here sprintNumberOfCreatedTask: ", sprintNumberOfCreatedTask);
+      console.log("Debug_here currentSprintInTitleTask: ", currentSprintInTitleTask);
       /**
        * Chỉ được tính duration là các task có:
         + Trong project chứa task phải có sprint đúng format task (xem file README.md)
@@ -56,6 +58,7 @@ export function getChartDataFromItems(
       const isEarlyCompletion = sprintNumberOfCreatedTask > currentSprintInTitleTask; // task làm nhanh hơn dự kiến (sprint 2 làm task sprint 3)
 
       let monthOfSprintThatCreatedTask = ""; // tháng mà task đc tạo
+
       let monthOfSprintInTitleTask = ""; // tháng chứa sprint mà task được sửa prefix.
 
       /**
@@ -80,7 +83,7 @@ export function getChartDataFromItems(
         });
       });
 
-      const isChangeMonthWhenChangePrefixNameInTask = monthOfSprintThatCreatedTask === monthOfSprintInTitleTask;
+      const isChangeMonthWhenChangePrefixNameInTask = monthOfSprintThatCreatedTask !== monthOfSprintInTitleTask;
 
       task.userWork.forEach((userId) => {
         let sprintNeedCheck: SprintsInProjectType = [];
@@ -96,7 +99,9 @@ export function getChartDataFromItems(
         } else {
           // nếu thay đổi prefix ko làm thay đổi sprint
           const monthSprintsData = monthsWithSprintData[monthOfSprintInTitleTask];
-          const currentSprint = monthSprintsData.find((spr) => spr.month === monthOfSprintInTitleTask);
+          const currentSprint = monthSprintsData.find(
+            (spr) => spr.month === monthOfSprintInTitleTask && spr.sprintNumber === sprintNumberOfCreatedTask,
+          );
           sprintNeedCheck = [currentSprint!];
         }
 
@@ -106,20 +111,24 @@ export function getChartDataFromItems(
 
             /**
              * Tăng ET trong TH:
-              - task được tạo ở sprint hiện tại và ko phải task làm nhanh
-              - hoặc tạo ở sprint khác và là task làm chậm (miss deadline)
+              - task được tạo ở sprint hiện tại + (ko phải task làm nhanh hoặc làm nhanh + chưa done)
+              - tạo ở sprint khác và là task làm chậm (miss deadline)
             */
             const isIncreateET =
-              (task.sprintId === sprint.id && !isEarlyCompletion) || (task.sprintId !== sprint.id && isMissedDeadline);
+              (task.sprintId === sprint.id && (!isEarlyCompletion || (isEarlyCompletion && !isDoneTask))) ||
+              (task.sprintId !== sprint.id && isMissedDeadline);
 
             /**
              * Tăng AT trong TH:
               - Tên prefix của task = sprint hiện tại + done
-              - Tạo ở sprint hiện tại + done + ko phải task làm nhanh
+              - Tạo ở sprint hiện tại + prefix hiện tại + done + ko phải task làm nhanh
             */
             const isIncreaseAT =
               (currentSprintInTitleTask === sprint.sprintNumber && isDoneTask) ||
-              (task.sprintId === sprint.id && isDoneTask && !isEarlyCompletion);
+              (task.sprintId === sprint.id &&
+                currentSprintInTitleTask === sprint.sprintNumber &&
+                isDoneTask &&
+                !isEarlyCompletion);
 
             const listChartData: ChartDataItemType[] = results?.[currentMonth] || [];
 
