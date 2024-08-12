@@ -13,8 +13,9 @@ perf = (AT / ET) * 100
 
 ### Điều kiện để tính được perf cho member
 
-- Bắt buộc khi tạo task phải thêm tiền tố [SPRINT_NUMBER]
+- Bắt buộc khi tạo task phải thêm tiền tố [SPRINT_NUMBER]: là số sprint mà task được tạo
   - Ví dụ: [38][FE] Cập nhật title màn gói cước
 - Bắt buộc tên sprint phải có số thứ tự và tháng năm
   - Ví dụ: Sprint 1 (T8_24), Sprint 2 (t8/24), Sprint 3 (T9-24)
-- Bắt buộc phải đổi prefix của task khi đổi task sang sprint khác (làm ko kịp dẫn đến task nhảy sprint, hoặc làm trước task của sprint kế tiếp)
+- Những task có format như sau: [38][expired] [FE] Cập nhật title màn gói cước (có thêm tiền tố expired) thì sẽ ko được tính AT: là những task tạo ở spr 38 nhưng sang spr 39 mới được check và phát sinh bug.
+- Những task có format như sau: [38][moved] [FE] Cập nhật title màn gói cước (có thêm tiền tố moved) là những task chưa trễ deadline + chưa làm gì ở spr trước => Tính ET cho 2 spr, tính AT spr sau

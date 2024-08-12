@@ -51,6 +51,10 @@ export const MemberPerfChart: React.FC<MemberPerfChartProps> = ({ filters }) => 
     },
   } satisfies ChartConfig;
 
+  const labelFormatter = (value: number) => {
+    return value || "";
+  };
+
   useEffect(() => {
     const results = getChartRenderData(appContext?.chartData!, filters.monthYear);
 
@@ -58,7 +62,7 @@ export const MemberPerfChart: React.FC<MemberPerfChartProps> = ({ filters }) => 
   }, [filters.monthYear, appContext?.chartData]);
 
   return listChartData.length > 0 ? (
-    <ChartContainer config={chartConfig} className="mx-auto min-h-[250px] w-full 2xl:w-10/12">
+    <ChartContainer config={chartConfig} className="mx-auto max-h-[calc(100vh-140px)] min-h-[250px] w-full 2xl:w-10/12">
       <BarChart accessibilityLayer data={listChartData}>
         <CartesianGrid />
         <XAxis dataKey="memberPercent" dy={3} />
@@ -68,13 +72,31 @@ export const MemberPerfChart: React.FC<MemberPerfChartProps> = ({ filters }) => 
         <ChartLegend content={<ChartLegendContent className="pt-0" />} height={36} fontSize={24} />
         <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
         <Bar dataKey="estimateTime" fill="#2563eb" radius={3}>
-          <LabelList position="insideTop" offset={12} className="hidden fill-white lg:inline-block" fontSize={12} />
+          <LabelList
+            position="insideTop"
+            offset={12}
+            className="hidden fill-white lg:inline-block"
+            fontSize={12}
+            formatter={labelFormatter}
+          />
         </Bar>
         <Bar dataKey="actualTime" fill="#5abb41" radius={3}>
-          <LabelList position="insideTop" offset={12} className="hidden fill-white lg:inline-block" fontSize={12} />
+          <LabelList
+            position="insideTop"
+            offset={12}
+            className="hidden fill-white lg:inline-block"
+            fontSize={12}
+            formatter={labelFormatter}
+          />
         </Bar>
         <Bar dataKey="incompleteTime" fill="#be4141" radius={3}>
-          <LabelList position="insideTop" offset={12} className="hidden fill-white lg:inline-block" fontSize={12} />
+          <LabelList
+            position="insideTop"
+            offset={12}
+            className="hidden fill-white lg:inline-block"
+            fontSize={12}
+            formatter={labelFormatter}
+          />
         </Bar>
       </BarChart>
     </ChartContainer>

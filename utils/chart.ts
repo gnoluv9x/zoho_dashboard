@@ -32,16 +32,18 @@ export function getChartDataFromItems(
   const results: Record<string, ChartDataItemType[]> = {};
 
   listItems.forEach((task) => {
-    const currentSprintInTitleTask = getSprintNameInTaskName(task.name); // sprint được được gán trong tên của task
     const sprintOfCreatedTask = listSprints.find((spr) => spr.id === task.sprintId);
-    const sprintNumberOfCreatedTask = getCurrentSprintFromName(sprintOfCreatedTask?.name!); // Task được tạo ở sprint bnh
+    const currentSprintOfTask = getCurrentSprintFromName(sprintOfCreatedTask?.name!); // sprint hiện tại của task
+    const sprintNumberOfCreatedTask = getSprintNameInTaskName(task.name); // Task được tạo ở sprint bnh
     const isDoneTask = listDoneTaskStatus.includes(task.statusTask);
     const monthsWithSprintData = listSprintsAndMonthsInProject[task.idProject]; // {"08/2024": [], "09/2024": []}
+    const isExpiredTask = checkExpiredTagFromTaskTitle(task.name);
+    const isMovedTask = checkMovedTagFromTaskTitle(task.name);
 
     if (
       monthsWithSprintData &&
       Object.keys(monthsWithSprintData).length > 0 &&
-      currentSprintInTitleTask &&
+      currentSprintOfTask &&
       task.durationPoint > 0 &&
       !task.itemTypeTitle.toLowerCase().includes("bug")
     ) {
@@ -52,8 +54,8 @@ export function getChartDataFromItems(
         + không phải bug
        */
 
-      const isMissedDeadline = sprintNumberOfCreatedTask < currentSprintInTitleTask; // task bị trễ dead line dẫn đến nhảy sang sprint khác hay ko?
-      const isEarlyCompletion = sprintNumberOfCreatedTask > currentSprintInTitleTask; // task làm nhanh hơn dự kiến (sprint 2 làm task sprint 3)
+      const isMissedDeadline = sprintNumberOfCreatedTask < currentSprintOfTask; // task bị trễ dead line dẫn đến nhảy sang sprint khác hay ko?
+      const isEarlyCompletion = sprintNumberOfCreatedTask > currentSprintOfTask; // task làm nhanh hơn dự kiến (sprint 2 làm task sprint 3)
 
       let monthOfSprintThatCreatedTask = ""; // tháng mà task đc tạo
 
@@ -72,7 +74,7 @@ export function getChartDataFromItems(
         const listSprints = monthsWithSprintData[currentMonth];
 
         listSprints.forEach((spr) => {
-          if (spr.sprintNumber === currentSprintInTitleTask) {
+          if (spr.sprintNumber === currentSprintOfTask) {
             monthOfSprintInTitleTask = spr.month;
           }
           if (spr.sprintNumber === sprintNumberOfCreatedTask) {
@@ -86,16 +88,14 @@ export function getChartDataFromItems(
 
         task.userWork.forEach((userId) => {
           let sprintNeedCheck: SprintsInProjectType = [];
-          if (isChangeMonthWhenChangePrefixNameInTask || sprintNumberOfCreatedTask !== currentSprintInTitleTask) {
+          if (isChangeMonthWhenChangePrefixNameInTask || sprintNumberOfCreatedTask !== currentSprintOfTask) {
             // nếu thay đổi prefix làm thay đổi tháng hoặc thay đổi sprint
             const monthSprintThatCreatedTask = monthsWithSprintData[monthOfSprintThatCreatedTask];
             const monthSprintInTitleTask = monthsWithSprintData[monthOfSprintInTitleTask];
             const sprintThatTaskCreatedTask = monthSprintThatCreatedTask.find(
               (spr) => spr.sprintNumber === sprintNumberOfCreatedTask,
             );
-            const sprintInTitleTask = monthSprintInTitleTask.find(
-              (spr) => spr.sprintNumber === currentSprintInTitleTask,
-            );
+            const sprintInTitleTask = monthSprintInTitleTask.find((spr) => spr.sprintNumber === currentSprintOfTask);
             sprintNeedCheck = [sprintThatTaskCreatedTask!, sprintInTitleTask!];
           } else {
             // nếu thay đổi prefix ko làm thay đổi sprint
@@ -116,20 +116,25 @@ export function getChartDataFromItems(
                 - tạo ở sprint khác và là task làm chậm (miss deadline)
               */
               const isIncreateET =
-                (task.sprintId === sprint.id && (!isEarlyCompletion || (isEarlyCompletion && !isDoneTask))) ||
-                (task.sprintId !== sprint.id && isMissedDeadline);
+                isMovedTask ||
+                (sprintNumberOfCreatedTask === sprint.sprintNumber &&
+                  (!isEarlyCompletion || (isEarlyCompletion && !isDoneTask))) ||
+                (sprintNumberOfCreatedTask !== sprint.sprintNumber && isMissedDeadline && !isExpiredTask);
 
               /**
                * Tăng AT trong TH:
+                - Không phải expired task
                 - Tên prefix của task = sprint hiện tại + done
                 - Tạo ở sprint hiện tại + prefix hiện tại + done + ko phải task làm nhanh
               */
               const isIncreaseAT =
-                (currentSprintInTitleTask === sprint.sprintNumber && isDoneTask) ||
-                (task.sprintId === sprint.id &&
-                  currentSprintInTitleTask === sprint.sprintNumber &&
-                  isDoneTask &&
-                  !isEarlyCompletion);
+                (!isExpiredTask &&
+                  ((currentSprintOfTask === sprint.sprintNumber && isDoneTask) ||
+                    (sprintNumberOfCreatedTask === sprint.sprintNumber &&
+                      currentSprintOfTask === sprint.sprintNumber &&
+                      isDoneTask &&
+                      !isEarlyCompletion))) ||
+                (isMovedTask && currentSprintOfTask === sprint.sprintNumber && isDoneTask);
 
               const listChartData: ChartDataItemType[] = results?.[currentMonth] || [];
 
@@ -191,4 +196,26 @@ export function getChartDataFromItems(
   });
 
   return results;
+}
+
+/**
+ * Hàm này kiểm tra xem trong title task có chứa prefix [expired] ko?
+ * Nếu có chứng tỏ task đã tạo ở sprint trước và có phát sinh bug ở sprint hiện tại
+ * @param taskName Tên task
+ * @returns boolean
+ */
+export function checkExpiredTagFromTaskTitle(taskName: string) {
+  const pattern = /\[expired\]/;
+  return pattern.test(taskName);
+}
+
+/**
+ * Hàm này kiểm tra xem trong title task có chứa prefix [moved] ko?
+ * Nếu có thì task đã tạo ở sprint trước nhưng chưa làm gì (todo)
+ * @param taskName Tên task
+ * @returns boolean
+ */
+export function checkMovedTagFromTaskTitle(taskName: string) {
+  const pattern = /\[moved\]/;
+  return pattern.test(taskName);
 }

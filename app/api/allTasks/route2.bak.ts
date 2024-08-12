@@ -96,6 +96,7 @@ export async function GET() {
                 id: currentKey,
                 name: data[0],
                 month,
+                projectId,
               };
               acc.push(value as never);
               return acc;
