@@ -1,6 +1,7 @@
 import { authApi } from "@/api/auth";
-import { ACCEPT_STATUS_CODE, ACCESS_TOKEN_KEY } from "@/constant";
+import { ACCEPT_STATUS_CODE, ACCESS_TOKEN_COOKIE_KEY, USERNAME_COOKIE_KEY } from "@/constant";
 import { ILoginBody } from "@/types";
+import { checkAuth } from "@/utils/helper";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -34,20 +35,25 @@ export async function POST(req: Request) {
 
   const { username, password } = loginBody;
 
+  const isAuth = checkAuth(username, password);
+
   // validate username && password
-  if (username !== process.env.NEXT_PUBLIC_ZOHO_USERNAME || password !== process.env.NEXT_PUBLIC_ZOHO_PASSWORD) {
+  if (!isAuth) {
     return NextResponse.json(
       { message: "Sai thông tin đăng nhập", status: "fail" },
       { status: ACCEPT_STATUS_CODE.BAD_REQUEST },
     );
   }
 
+  // save username to cookie
+  const cookieStore = cookies();
+  cookieStore.set(USERNAME_COOKIE_KEY, username);
+
   // get access token from refresh token
   const respData = await authApi.getAccessToken();
 
   if (respData?.access_token) {
-    const cookieStore = cookies();
-    cookieStore.set(ACCESS_TOKEN_KEY, respData.access_token);
+    cookieStore.set(ACCESS_TOKEN_COOKIE_KEY, respData.access_token);
     return NextResponse.json(
       { message: "Đăng nhập thành công", accessToken: respData.access_token, status: "success" },
       { status: 200 },

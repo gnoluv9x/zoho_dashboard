@@ -3,7 +3,7 @@
 import Loader from "@/components/common/Loading";
 import { useAppContext } from "@/components/context/App";
 import { MemberPerformance } from "@/components/MemberPerformance";
-import { ACCESS_TOKEN_KEY } from "@/constant";
+import { ACCESS_TOKEN_COOKIE_KEY } from "@/constant";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useLayoutEffect } from "react";
@@ -11,7 +11,7 @@ import { useLayoutEffect } from "react";
 export default function Page() {
   const router = useRouter();
   const appContext = useAppContext();
-  const accessToken = Cookies.get(ACCESS_TOKEN_KEY);
+  const accessToken = Cookies.get(ACCESS_TOKEN_COOKIE_KEY);
 
   const loading = appContext?.loading;
 

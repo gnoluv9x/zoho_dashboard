@@ -1,5 +1,5 @@
 import { authApi } from "@/api/auth";
-import { ACCEPT_STATUS_CODE, ACCESS_TOKEN_KEY } from "@/constant";
+import { ACCEPT_STATUS_CODE, ACCESS_TOKEN_COOKIE_KEY } from "@/constant";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 import queryString from "query-string";
@@ -27,7 +27,7 @@ axiosClient.interceptors.response.use(
       const resp: any = await getAccessToken();
 
       if (resp?.data?.accessToken) {
-        Cookies.set(ACCESS_TOKEN_KEY, resp?.data.accessToken);
+        Cookies.set(ACCESS_TOKEN_COOKIE_KEY, resp?.data.accessToken);
         return axiosClient(config);
       }
     }

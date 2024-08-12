@@ -4,7 +4,7 @@ import Loader from "@/components/common/Loading";
 import { useAppContext } from "@/components/context/App";
 import Filter from "@/components/Filters";
 import TaskTable from "@/components/TaskTable";
-import { ACCESS_TOKEN_KEY } from "@/constant";
+import { ACCESS_TOKEN_COOKIE_KEY } from "@/constant";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -13,7 +13,7 @@ export default function Home() {
   const router = useRouter();
   const appContext = useAppContext();
 
-  const accessToken = Cookies.get(ACCESS_TOKEN_KEY);
+  const accessToken = Cookies.get(ACCESS_TOKEN_COOKIE_KEY);
   const loading = appContext?.loading;
 
   useEffect(() => {

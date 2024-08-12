@@ -248,3 +248,20 @@ export function getListProjectWithMonth(listSprints: SprintDataType[]): ListMont
     return lists;
   }, {});
 }
+
+export function checkAuth(username: string, password: string): boolean {
+  if (!username || !password) return false;
+
+  const listUsernames = getListsFromName(process.env.NEXT_PUBLIC_ZOHO_USERNAME);
+  const listPasswords = getListsFromName(process.env.NEXT_PUBLIC_ZOHO_PASSWORD);
+
+  if (listUsernames.length === 0 || listPasswords.length === 0) return false;
+
+  return listUsernames.includes(username) && listPasswords.includes(password);
+}
+
+function getListsFromName(nameString: string | undefined): string[] {
+  if (!nameString) return [];
+
+  return nameString.includes(",") ? nameString.split(",") : [nameString];
+}

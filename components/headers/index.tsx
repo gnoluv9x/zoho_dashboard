@@ -2,8 +2,7 @@
 
 import Avatar from "@/components/common/Avatar";
 import { useAppContext } from "@/components/context/App";
-import { Button } from "@/components/ui/button";
-import { ACCESS_TOKEN_KEY } from "@/constant";
+import { ACCESS_TOKEN_COOKIE_KEY, USERNAME_COOKIE_KEY } from "@/constant";
 import { AllSprintData, CommonInfo, FinalResponse, IdAndNameType, ItemTypes, SprintDataType } from "@/types";
 import { TaskDetail } from "@/types/type";
 import axiosClient from "@/utils/api";
@@ -32,6 +31,8 @@ const Header: React.FC<HeaderProps> = () => {
   const pathname = usePathname();
   const router = useRouter();
 
+  const currentUser = Cookies.get(USERNAME_COOKIE_KEY);
+
   const appContext = useAppContext();
 
   if (pathname === "/auth") {
@@ -39,7 +40,7 @@ const Header: React.FC<HeaderProps> = () => {
   }
 
   const handleLogout = () => {
-    Cookies.remove(ACCESS_TOKEN_KEY);
+    Cookies.remove(ACCESS_TOKEN_COOKIE_KEY);
     router.push("/auth");
   };
 
@@ -226,7 +227,7 @@ const Header: React.FC<HeaderProps> = () => {
         <div className="flex text-white">
           <div className="mr-2 flex items-center gap-2">
             <Avatar className="h-6 w-6 rounded-full" />
-            <span className="hidden lg:inline">{process.env.NEXT_PUBLIC_ZOHO_USERNAME}</span>
+            <span className="hidden lg:inline">{currentUser}</span>
           </div>
           <div className="my-2 mr-2 h-7 w-[1px] bg-[#aaa]"></div>
           <button onClick={handleLogout} className="p-1 font-normal">

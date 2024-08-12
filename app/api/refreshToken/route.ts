@@ -1,5 +1,5 @@
 import { authApi } from "@/api/auth";
-import { ACCEPT_STATUS_CODE, ACCESS_TOKEN_KEY } from "@/constant";
+import { ACCEPT_STATUS_CODE, ACCESS_TOKEN_COOKIE_KEY } from "@/constant";
 import { ILoginBody } from "@/types";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
@@ -10,7 +10,7 @@ export async function POST() {
 
   if (respData?.access_token) {
     const cookieStore = cookies();
-    cookieStore.set(ACCESS_TOKEN_KEY, respData.access_token);
+    cookieStore.set(ACCESS_TOKEN_COOKIE_KEY, respData.access_token);
     return NextResponse.json(
       { message: "Đăng nhập thành công", accessToken: respData.access_token, status: "success" },
       { status: 200 },

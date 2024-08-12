@@ -1,4 +1,4 @@
-import { ACCESS_TOKEN_KEY, INVALID_TOKEN_CODE } from "@/constant";
+import { ACCESS_TOKEN_COOKIE_KEY, INVALID_TOKEN_CODE } from "@/constant";
 import { AllSprintData, FinalResponse, IdAndNameType, ItemType, ProjectResponse, ZohoItemDetail } from "@/types";
 import { TaskDetail } from "@/types/type";
 import { convertTimeToHours, getItemProps, getMonthFromSprintName } from "@/utils/helper";
@@ -13,7 +13,7 @@ export async function GET() {
   try {
     // check authen
     const cookieStore = cookies();
-    const accessToken = cookieStore.get(ACCESS_TOKEN_KEY)?.value;
+    const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE_KEY)?.value;
 
     if (!accessToken) return authenticationFailed();
 
