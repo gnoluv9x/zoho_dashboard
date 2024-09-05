@@ -117,7 +117,7 @@ export async function getItems(
   sprintId: string,
   accessToken: string,
 ): Promise<ZohoItemDetail> {
-  const url = `https://sprintsapi.zoho.com/zsapi/team/${teamId}/projects/${projectId}/sprints/${sprintId}/item/?action=sprintitems&index=1&range=100&subitem=true`;
+  const url = `https://sprintsapi.zoho.com/zsapi/team/${teamId}/projects/${projectId}/sprints/${sprintId}/item/?action=sprintitems&index=1&range=1000&subitem=true`;
 
   const response = await fetch(url, {
     method: "GET",

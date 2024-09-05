@@ -1,16 +1,25 @@
 import { ACCESS_TOKEN_COOKIE_KEY, INVALID_TOKEN_CODE } from "@/constant";
 import { AllSprintData, FinalResponse, IdAndNameType, ItemType, ProjectResponse, ZohoItemDetail } from "@/types";
 import { TaskDetail } from "@/types/type";
-import { convertTimeToHours, getItemProps, getMonthFromSprintName } from "@/utils/helper";
-import { getItems, getListItemTypes, getListStatus, getProjects, getSprint, getTeams } from "@/utils/listApis";
+import {
+  convertTimeToHours,
+  getIdxSprintCreatedAt,
+  getIdxSprintName,
+  getItemProps,
+  getMonthFromSprintName,
+  isValidSprint,
+} from "@/utils/helper";
+import { getItems, getListItemTypes, getListStatus, getProjects, getSprint, getTeams } from "@/api/task";
 import { authenticationFailed, emptyResponse, errorResponse } from "@/utils/response";
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const searchParams = request.nextUrl.searchParams;
+    const isShowAll = searchParams.get("showAll") === "true";
     // check authen
     const cookieStore = cookies();
     const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE_KEY)?.value;
@@ -87,18 +96,26 @@ export async function GET() {
           ? Object.keys(sprintData.userDisplayName)?.[0]
           : "";
 
+      const sprintNameIndex = getIdxSprintName(sprintData?.sprint_prop);
+      const sprintCreatedTimeIndex = getIdxSprintCreatedAt(sprintData?.sprint_prop);
       const sprintItem = {
         listing: sprintData?.sprintJObj
           ? Object.keys(sprintData.sprintJObj || {}).reduce((acc, currentKey) => {
               const data = sprintData.sprintJObj[currentKey];
-              const month = getMonthFromSprintName(data[0]);
-              const value = {
-                id: currentKey,
-                name: data[0],
-                month,
-                projectId,
-              };
-              acc.push(value as never);
+              const sprintCreatedTime = data[sprintCreatedTimeIndex];
+
+              if (isShowAll || (!isShowAll && isValidSprint(sprintCreatedTime))) {
+                const month = getMonthFromSprintName(data[sprintNameIndex]);
+                const value = {
+                  id: currentKey,
+                  name: data[sprintNameIndex],
+                  month,
+                  projectId,
+                };
+
+                acc.push(value as never);
+              }
+
               return acc;
             }, [])
           : [],

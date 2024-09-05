@@ -1,9 +1,8 @@
-import { authApi } from "@/api/auth";
+import { getAccessToken } from "@/api/task";
 import { ACCEPT_STATUS_CODE, ACCESS_TOKEN_COOKIE_KEY } from "@/constant";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 import queryString from "query-string";
-import { getAccessToken } from "./listApis";
 
 const listAcceptHttpStatusCode = Object.values(ACCEPT_STATUS_CODE);
 

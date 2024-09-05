@@ -173,7 +173,7 @@ const Header: React.FC<HeaderProps> = () => {
     appContext?.setLoading(true);
 
     axiosClient
-      .get("/allTasks")
+      .get("/allTasks", { params: { showAll: false } })
       .then((resp: AxiosResponse<FinalResponse>) => {
         handleRespData(resp.data);
       })

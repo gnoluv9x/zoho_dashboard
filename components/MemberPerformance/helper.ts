@@ -41,5 +41,8 @@ export function getChartRenderData(
     return lists;
   }, []);
 
+  // sắp xếp lại theo tên
+  results.sort((a, b) => a.memberName.localeCompare(b.memberName));
+
   return results;
 }

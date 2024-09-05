@@ -211,7 +211,6 @@ export function checkExpiredTagFromTaskTitle(taskName: string) {
 
 /**
  * Hàm này kiểm tra xem trong title task có chứa prefix [moved] ko?
- * Nếu có thì task đã tạo ở sprint trước nhưng chưa làm gì (todo)
  * @param taskName Tên task
  * @returns boolean
  */

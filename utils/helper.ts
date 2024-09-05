@@ -2,6 +2,7 @@ import { APP_PRECISION, ITEM_PROPS_NAME } from "@/constant";
 import { ListMonthsFollowProjectId, SprintDataType, SprintsInProjectType } from "@/types";
 import { FORMATS_OF_DATE, TaskDetail } from "@/types/type";
 import classNames from "classnames";
+import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
 
 export const handleLogout = async () => {};
@@ -264,4 +265,23 @@ function getListsFromName(nameString: string | undefined): string[] {
   if (!nameString) return [];
 
   return nameString.includes(",") ? nameString.split(",") : [nameString];
+}
+
+// hàm này lấy index của tên sprint trong list sprint
+export function getIdxSprintName(sprintProps: Record<string, number>) {
+  if (!sprintProps || Object.keys(sprintProps).length === 0) return 0;
+
+  return sprintProps.sprintName || 0;
+}
+
+// hàm này lấy index của ngày tạo sprint
+export function getIdxSprintCreatedAt(sprintProps: Record<string, number>) {
+  if (!sprintProps || Object.keys(sprintProps).length === 0) return 7;
+
+  return sprintProps.createdTime || 7;
+}
+
+export function isValidSprint(creatdTime: string) {
+  // những sprint được tạo từ ngày 01/08/2024 là những sprint được áp dụng KPI và có format dạng: Sprint 20 (T8_24)
+  return dayjs(creatdTime).isAfter(dayjs("01-08-2024", "DD-MM-YYYY"));
 }
