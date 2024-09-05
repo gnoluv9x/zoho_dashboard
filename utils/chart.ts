@@ -7,7 +7,7 @@ import {
   getSprintNameInTaskName,
 } from "@/utils/helper";
 
-// hàm lấy thông tin chart
+// hàm lấy thông tin chart: các test cases xem links trong file README.md
 export function getChartDataFromItems(
   listItems: TaskDetail[],
   listSprints: SprintDataType[],
@@ -63,7 +63,7 @@ export function getChartDataFromItems(
 
       /**
        * Loop qua list sprints trong project hiện tại để kiểm tra xem task có bị nhảy tháng sau khi đổi prefix tên không?
-       * Ví dụ ban đầu tên task: 
+       * Ví dụ ban đầu tên task:
        * [3] Task của sprint 3 
        * => Sửa tên thành [1] Task của sprint 3. 
        * Khi này cần tìm tháng chứa sprint 1 và 3 để xem chúng có = nhau không.
@@ -116,10 +116,14 @@ export function getChartDataFromItems(
                 - tạo ở sprint khác và là task làm chậm (miss deadline)
               */
               const isIncreateET =
-                isMovedTask ||
-                (sprintNumberOfCreatedTask === sprint.sprintNumber &&
+                (isMovedTask && sprintNumberOfCreatedTask === sprint.sprintNumber) ||
+                (!isMovedTask &&
+                  sprintNumberOfCreatedTask === sprint.sprintNumber &&
                   (!isEarlyCompletion || (isEarlyCompletion && !isDoneTask))) ||
-                (sprintNumberOfCreatedTask !== sprint.sprintNumber && isMissedDeadline && !isExpiredTask);
+                (!isMovedTask &&
+                  sprintNumberOfCreatedTask !== sprint.sprintNumber &&
+                  isMissedDeadline &&
+                  !isExpiredTask);
 
               /**
                * Tăng AT trong TH:
@@ -129,12 +133,13 @@ export function getChartDataFromItems(
               */
               const isIncreaseAT =
                 (!isExpiredTask &&
+                  !isMovedTask &&
                   ((currentSprintOfTask === sprint.sprintNumber && isDoneTask) ||
                     (sprintNumberOfCreatedTask === sprint.sprintNumber &&
                       currentSprintOfTask === sprint.sprintNumber &&
                       isDoneTask &&
                       !isEarlyCompletion))) ||
-                (isMovedTask && currentSprintOfTask === sprint.sprintNumber && isDoneTask);
+                (isMovedTask && sprintNumberOfCreatedTask === sprint.sprintNumber && isDoneTask);
 
               const listChartData: ChartDataItemType[] = results?.[currentMonth] || [];
 
