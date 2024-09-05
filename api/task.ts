@@ -1,4 +1,9 @@
-import { REVALIDATE_TIME } from "@/constant";
+import {
+  REVALIDATE_TIME_ONE_DAY,
+  REVALIDATE_TIME_ONE_HOUR,
+  REVALIDATE_TIME_ONE_MONTH,
+  REVALIDATE_TIME_ZERO,
+} from "@/constant";
 import { ItemTypes, ZohoItemDetail } from "@/types";
 import axios from "axios";
 
@@ -11,7 +16,7 @@ export async function getTeams(accessToken: string) {
       Authorization: `Zoho-oauthtoken ${accessToken}`,
     },
     redirect: "manual",
-    next: { revalidate: REVALIDATE_TIME },
+    next: { revalidate: REVALIDATE_TIME_ONE_MONTH },
   });
 
   return await response.json();
@@ -26,7 +31,7 @@ export async function getProjects(teamId: string, accessToken: string) {
         Authorization: `Zoho-oauthtoken ${accessToken}`,
       },
       redirect: "manual",
-      next: { revalidate: REVALIDATE_TIME },
+      next: { revalidate: REVALIDATE_TIME_ONE_DAY },
     },
   );
 
@@ -42,7 +47,7 @@ export async function getSprint(teamId: string, projectId: string, accessToken: 
         Authorization: `Zoho-oauthtoken ${accessToken}`,
       },
       redirect: "manual",
-      next: { revalidate: REVALIDATE_TIME },
+      next: { revalidate: REVALIDATE_TIME_ONE_HOUR },
     },
   );
 
@@ -62,7 +67,7 @@ export async function getListItemTypes(teamId: string, projectId: string, access
         Authorization: `Zoho-oauthtoken ${accessToken}`,
       },
       redirect: "manual",
-      next: { revalidate: REVALIDATE_TIME },
+      next: { revalidate: REVALIDATE_TIME_ONE_HOUR },
     },
   );
 
@@ -99,7 +104,7 @@ export async function getListStatus(teamId: string, projectId: string, accessTok
         Authorization: `Zoho-oauthtoken ${accessToken}`,
       },
       redirect: "manual",
-      next: { revalidate: REVALIDATE_TIME },
+      next: { revalidate: REVALIDATE_TIME_ONE_HOUR },
     },
   );
 
@@ -125,7 +130,7 @@ export async function getItems(
       Authorization: `Zoho-oauthtoken ${accessToken}`,
     },
     redirect: "manual",
-    next: { revalidate: REVALIDATE_TIME },
+    next: { revalidate: REVALIDATE_TIME_ZERO },
   });
 
   const data = await response.json();

@@ -8,7 +8,12 @@ export const USERNAME_COOKIE_KEY = "user";
 
 export const INVALID_TOKEN_CODE = 7601;
 
-export const REVALIDATE_TIME = 0; // seconds
+export const SPRINT_START_DATE = "01-08-2024"; // Ngày bắt đầu tính performance cho member (dùng để giới hạn số lần call api)
+
+export const REVALIDATE_TIME_ZERO = 0; // seconds
+export const REVALIDATE_TIME_ONE_MONTH = 30 * 24 * 60 * 60; // 1 month
+export const REVALIDATE_TIME_ONE_DAY = 24 * 60 * 60; // 1 day
+export const REVALIDATE_TIME_ONE_HOUR = 60 * 60; // 1h
 
 export const DEFAULT_PAGE = 1;
 

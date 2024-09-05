@@ -1,4 +1,4 @@
-import { APP_PRECISION, ITEM_PROPS_NAME } from "@/constant";
+import { APP_PRECISION, ITEM_PROPS_NAME, SPRINT_START_DATE } from "@/constant";
 import { ListMonthsFollowProjectId, SprintDataType, SprintsInProjectType } from "@/types";
 import { FORMATS_OF_DATE, TaskDetail } from "@/types/type";
 import classNames from "classnames";
@@ -283,5 +283,5 @@ export function getIdxSprintCreatedAt(sprintProps: Record<string, number>) {
 
 export function isValidSprint(creatdTime: string) {
   // những sprint được tạo từ ngày 01/08/2024 là những sprint được áp dụng KPI và có format dạng: Sprint 20 (T8_24)
-  return dayjs(creatdTime).isAfter(dayjs("01-08-2024", "DD-MM-YYYY"));
+  return dayjs(creatdTime).isAfter(dayjs(SPRINT_START_DATE, "DD-MM-YYYY"));
 }
