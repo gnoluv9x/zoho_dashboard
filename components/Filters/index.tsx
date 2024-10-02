@@ -183,6 +183,7 @@ const Filter: React.FC<FilterProps> = () => {
           options={
             appContext?.listStatus ? appContext?.listStatus.map(({ id, name }) => ({ value: id, label: name })) : []
           }
+          isClearable
         />
       </div>
       <div className="filter__projects col-span-12 md:col-span-6 lg:col-span-2">
@@ -193,6 +194,7 @@ const Filter: React.FC<FilterProps> = () => {
           options={
             appContext?.listProjects ? appContext?.listProjects.map(({ id, name }) => ({ value: id, label: name })) : []
           }
+          isClearable
         />
       </div>
       <div className="filter__assignedTo col-span-12 md:col-span-8 lg:col-span-4">
