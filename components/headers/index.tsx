@@ -22,7 +22,7 @@ import { ChartColumnBig, ListTodo } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 
 interface HeaderProps {}
@@ -31,9 +31,9 @@ const Header: React.FC<HeaderProps> = () => {
   const pathname = usePathname();
   const router = useRouter();
 
-  const currentUser = Cookies.get(USERNAME_COOKIE_KEY);
-
   const appContext = useAppContext();
+
+  const [currentUser, setCurrentUser] = useState<string>("");
 
   if (pathname === "/auth") {
     return false;
@@ -183,6 +183,10 @@ const Header: React.FC<HeaderProps> = () => {
       .finally(() => {
         appContext?.setLoading(false);
       });
+  }, []);
+
+  useEffect(() => {
+    setCurrentUser(Cookies.get(USERNAME_COOKIE_KEY) || "");
   }, []);
 
   return (
